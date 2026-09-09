@@ -1,11 +1,18 @@
+import { useState } from 'react';
 import { NavLink, Outlet, useNavigate, Navigate } from 'react-router-dom';
-import { LayoutDashboard, Users, UserSquare2, MapPin, CalendarClock, Settings, LogOut, BarChart3, RefreshCw, ScrollText } from 'lucide-react';
+import { 
+  LayoutDashboard, Users, UserSquare2, MapPin, CalendarClock, Settings, 
+  LogOut, BarChart3, RefreshCw, Menu, X, Smartphone 
+} from 'lucide-react';
 import { useAuthStore } from '@/stores/useAuthStore';
+import { usePwaInstall } from '@/hooks/usePwaInstall';
 import { clsx } from 'clsx';
 
 export default function AdminLayout() {
   const { user, logout, isAuthenticated, role } = useAuthStore();
   const navigate = useNavigate();
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const { canInstall, installPwa } = usePwaInstall();
 
   if (!isAuthenticated) return <Navigate to="/login" replace />;
   if (role !== 'admin') return <Navigate to="/" replace />;
@@ -27,64 +34,142 @@ export default function AdminLayout() {
   ];
 
   return (
-    <div className="flex h-screen bg-neutral-50 overflow-hidden">
-      {/* Sidebar */}
-      <aside className="w-64 bg-white border-r border-neutral-200 flex flex-col">
-        <div className="p-6 border-b border-neutral-100">
-          <h1 className="text-xl font-bold text-secondary">CONVERGE-DTRS</h1>
-          <div className="flex items-center gap-3 mt-4">
-            <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center text-primary font-bold">
+    <div className="flex h-screen bg-[#F0F4F9] overflow-hidden font-sans">
+
+      {/* Mobile Backdrop Overlay */}
+      {mobileOpen && (
+        <div 
+          onClick={() => setMobileOpen(false)}
+          className="fixed inset-0 z-40 bg-navy-950/60 backdrop-blur-xs md:hidden"
+        />
+      )}
+
+      {/* Sidebar (Desktop + Mobile Drawer) */}
+      <aside className={clsx(
+        "fixed md:static inset-y-0 left-0 z-50 w-64 bg-[#0B192C] text-slate-100 border-r border-[#162A45] flex flex-col transition-transform duration-300 ease-in-out shadow-2xl md:shadow-none",
+        mobileOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
+      )}>
+        {/* Sidebar Header with Login Logo */}
+        <div className="p-5 border-b border-[#1A2E48] flex flex-col gap-4">
+          <div className="flex items-center justify-between">
+            <div className="bg-white/95 px-3.5 py-1.5 rounded-xl shadow-sm flex items-center">
+              <img 
+                src="/CSiLogo.png" 
+                alt="Converge ICT" 
+                className="h-8 w-auto object-contain"
+              />
+            </div>
+            {/* Close button for mobile */}
+            <button 
+              onClick={() => setMobileOpen(false)}
+              className="md:hidden p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10"
+            >
+              <X size={20} />
+            </button>
+          </div>
+
+          <div className="flex items-center gap-3 pt-3 border-t border-[#1A2E48]">
+            <div className="w-9 h-9 bg-primary text-white rounded-xl flex items-center justify-center font-black text-sm shrink-0 shadow-md shadow-primary/20">
               {user?.name?.charAt(0) || 'A'}
             </div>
-            <div>
-              <p className="font-semibold text-sm text-neutral-800 line-clamp-1">{user?.name}</p>
-              <p className="text-xs text-neutral-500">System Administrator</p>
+            <div className="overflow-hidden">
+              <p className="font-extrabold text-xs text-white truncate">{user?.name}</p>
+              <p className="text-[10px] text-slate-400 font-medium">Converge Administrator</p>
             </div>
           </div>
         </div>
-        
-        <nav className="flex-1 overflow-y-auto py-4">
-          <ul className="space-y-1 px-3">
+
+        {/* Navigation Items */}
+        <nav className="flex-1 overflow-y-auto py-4 px-3">
+          <ul className="space-y-1.5">
             {navItems.map((item) => (
               <li key={item.to}>
                 <NavLink
                   to={item.to}
                   end={item.exact}
+                  onClick={() => setMobileOpen(false)}
                   className={({ isActive }) => clsx(
-                    "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
-                    isActive ? "bg-secondary/10 text-secondary" : "text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900"
+                    "flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all duration-150",
+                    isActive 
+                      ? "bg-primary text-white shadow-lg shadow-primary/30 border border-primary-light/40" 
+                      : "text-slate-300 hover:bg-white/10 hover:text-white"
                   )}
                 >
-                  <item.icon size={20} />
-                  {item.label}
+                  <item.icon size={18} />
+                  <span>{item.label}</span>
                 </NavLink>
               </li>
             ))}
           </ul>
         </nav>
 
-        <div className="p-4 border-t border-neutral-200">
+        {/* PWA Install & Logout Footer */}
+        <div className="p-3.5 border-t border-[#1A2E48] space-y-1.5 bg-[#081323]">
+          {canInstall && (
+            <button
+              onClick={installPwa}
+              className="flex items-center gap-2.5 px-3.5 py-2.5 w-full rounded-xl text-xs font-bold bg-primary/15 text-orange-300 hover:bg-primary/25 border border-primary/30 transition-colors shadow-xs cursor-pointer"
+            >
+              <Smartphone size={16} />
+              <span>Install Mobile App</span>
+            </button>
+          )}
+
           <button 
             onClick={handleLogout}
-            className="flex items-center gap-3 px-3 py-2.5 w-full rounded-lg text-sm font-medium text-neutral-600 hover:bg-red-50 hover:text-red-600 transition-colors"
+            className="flex items-center gap-3 px-3.5 py-2.5 w-full rounded-xl text-xs font-bold text-slate-400 hover:bg-red-500/20 hover:text-red-300 transition-colors cursor-pointer"
           >
-            <LogOut size={20} />
-            Logout
+            <LogOut size={18} />
+            <span>Logout</span>
           </button>
         </div>
       </aside>
 
-      {/* Main Content */}
-      <main className="flex-1 flex flex-col overflow-hidden">
-        <header className="bg-white h-16 border-b border-neutral-200 flex items-center px-8 shadow-sm">
-          <div className="ml-auto flex items-center gap-4">
-            <span className="flex items-center gap-2 text-sm text-green-600 bg-green-50 px-3 py-1 rounded-full font-medium">
-              <span className="w-2 h-2 rounded-full bg-green-500"></span>
-              System Online
+      {/* Main Content Workspace */}
+      <main className="flex-1 flex flex-col min-w-0 overflow-hidden">
+        {/* Top Header Bar */}
+        <header className="bg-white h-14 border-b border-slate-200/80 flex items-center justify-between px-4 md:px-8 shadow-xs z-20 shrink-0">
+          <div className="flex items-center gap-3">
+            {/* Hamburger Button on Mobile */}
+            <button 
+              onClick={() => setMobileOpen(true)}
+              className="md:hidden p-2 rounded-xl text-navy-800 hover:bg-slate-100 active:scale-95 transition-transform"
+              title="Open Navigation Menu"
+            >
+              <Menu size={22} />
+            </button>
+
+            <div className="flex items-center gap-2 md:hidden">
+              <img src="/CSiLogo.png" alt="Logo" className="h-7 object-contain" />
+            </div>
+
+            <div className="hidden md:flex items-center gap-2 text-xs font-extrabold text-navy-900 tracking-wide uppercase">
+              <span className="w-2.5 h-2.5 rounded-full bg-primary inline-block"></span>
+              Converge Field Management Console
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3">
+            {canInstall && (
+              <button
+                onClick={installPwa}
+                className="hidden sm:flex items-center gap-1.5 bg-primary/10 text-primary hover:bg-primary/20 px-3 py-1.5 rounded-xl text-xs font-bold border border-primary/20 transition-colors cursor-pointer"
+              >
+                <Smartphone size={15} />
+                Install App
+              </button>
+            )}
+
+            <span className="flex items-center gap-1.5 text-xs text-emerald-800 bg-emerald-50 px-3 py-1.5 rounded-xl font-bold border border-emerald-200/80 shadow-2xs">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              <span className="hidden sm:inline">System Online</span>
+              <span className="sm:hidden">Online</span>
             </span>
           </div>
         </header>
-        <div className="flex-1 overflow-y-auto p-8">
+
+        {/* Scrollable Page Body */}
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6 md:p-8">
           <Outlet />
         </div>
       </main>

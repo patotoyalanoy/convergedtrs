@@ -47,6 +47,9 @@ export interface AttendanceRecord {
   syncStatus: SyncStatus;
   syncRetryCount: number;
   createdOffline: boolean;
+  teamName?: string;
+  membersPresent?: string[];
+  locationName?: string;
 }
 
 export interface Admin {

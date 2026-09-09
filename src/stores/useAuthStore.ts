@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { persist, createJSONStorage } from 'zustand/middleware';
 import { Employee, Admin } from '@/types';
 
 interface AuthState {
@@ -9,10 +10,18 @@ interface AuthState {
   logout: () => void;
 }
 
-export const useAuthStore = create<AuthState>((set) => ({
-  user: null,
-  role: null,
-  isAuthenticated: false,
-  login: (user, role) => set({ user, role, isAuthenticated: true }),
-  logout: () => set({ user: null, role: null, isAuthenticated: false }),
-}));
+export const useAuthStore = create<AuthState>()(
+  persist(
+    (set) => ({
+      user: null,
+      role: null,
+      isAuthenticated: false,
+      login: (user, role) => set({ user, role, isAuthenticated: true }),
+      logout: () => set({ user: null, role: null, isAuthenticated: false }),
+    }),
+    {
+      name: 'converge-dtrs-auth',
+      storage: createJSONStorage(() => localStorage),
+    }
+  )
+);

@@ -15,6 +15,13 @@ export class ConvergeDTRSDatabase extends Dexie {
       teamsCache: 'id',
       sitesCache: 'id',
     });
+    // Version 2: added teamName, membersPresent, locationName columns
+    this.version(2).stores({
+      attendanceQueue: 'id, employeeId, type, syncStatus, recordedAt, teamName, locationName',
+      employeesCache: 'id, teamId',
+      teamsCache: 'id',
+      sitesCache: 'id',
+    });
   }
 }
 

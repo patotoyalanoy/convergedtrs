@@ -16,10 +16,9 @@ import Reports from '@/pages/admin/Reports';
 import SyncMonitor from '@/pages/admin/SyncMonitor';
 import Settings from '@/pages/admin/Settings';
 
-// Team App placeholder pages
-const Attendance = () => <div className="p-6 text-neutral-500">Attendance History coming soon.</div>;
-const Team = () => <div className="p-6 text-neutral-500">Team info coming soon.</div>;
-const Profile = () => <div className="p-6 text-neutral-500">Profile coming soon.</div>;
+import AttendanceHistory from '@/pages/team/AttendanceHistory';
+import TeamInfo from '@/pages/team/TeamInfo';
+import Profile from '@/pages/team/Profile';
 
 export const router = createBrowserRouter([
   {
@@ -31,8 +30,8 @@ export const router = createBrowserRouter([
     element: <AppLayout />,
     children: [
       { index: true, element: <Home /> },
-      { path: 'attendance', element: <Attendance /> },
-      { path: 'team', element: <Team /> },
+      { path: 'attendance', element: <AttendanceHistory /> },
+      { path: 'team', element: <TeamInfo /> },
       { path: 'profile', element: <Profile /> },
     ],
   },

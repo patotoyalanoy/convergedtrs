@@ -1,0 +1,18 @@
+{
+  "short_name": "Converge DTRS",
+  "name": "Converge Daily Time Record System",
+  "description": "Converge ICT Daily Time Record and Field Attendance System",
+  "icons": [
+    {
+      "src": "/app-icon.png",
+      "type": "image/png",
+      "sizes": "192x192 512x512",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#0B192C",
+  "theme_color": "#0B192C",
+  "display": "standalone",
+  "orientation": "portrait-primary"
+}

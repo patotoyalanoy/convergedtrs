@@ -64,24 +64,24 @@ export default function CameraCapture({ onCapture, onCancel }: Props) {
 
   if (error) {
     return (
-      <div className="absolute inset-0 z-50 bg-black flex flex-col items-center justify-center text-white p-6 text-center">
+      <div className="fixed inset-0 z-[100] max-w-lg mx-auto bg-black flex flex-col items-center justify-center text-white p-6 text-center">
         <p className="mb-4 text-red-400">{error}</p>
-        <button onClick={onCancel} className="bg-white text-black px-6 py-2 rounded-lg font-semibold">Go Back</button>
+        <button onClick={onCancel} className="bg-white text-black px-6 py-2.5 rounded-xl font-bold text-sm cursor-pointer">Go Back</button>
       </div>
     );
   }
 
   return (
-    <div className="absolute inset-0 z-50 bg-black flex flex-col">
+    <div className="fixed inset-0 z-[100] max-w-lg mx-auto bg-black flex flex-col shadow-2xl">
       {/* Header */}
-      <div className="flex justify-between items-center p-4 text-white">
-        <button onClick={handleClose} className="p-2"><X size={28} /></button>
-        <h2 className="font-semibold text-lg">Capture Photo</h2>
-        <div className="w-11"></div> {/* Spacer for centering */}
+      <div className="flex justify-between items-center p-4 text-white shrink-0 z-10">
+        <button onClick={handleClose} className="p-2 -ml-2 hover:bg-white/10 rounded-full transition-colors cursor-pointer"><X size={26} /></button>
+        <h2 className="font-bold text-base">Capture Photo Evidence</h2>
+        <div className="w-10"></div>
       </div>
 
       {/* Viewfinder / Preview */}
-      <div className="flex-1 relative overflow-hidden flex items-center justify-center">
+      <div className="flex-1 relative overflow-hidden flex items-center justify-center bg-black">
         {!previewUrl ? (
           <video 
             ref={videoRef} 
@@ -94,28 +94,28 @@ export default function CameraCapture({ onCapture, onCancel }: Props) {
         )}
       </div>
 
-      {/* Controls */}
-      <div className="h-32 bg-black pb-8 flex items-center justify-around px-8">
+      {/* Controls Container ALWAYS VISIBLE ABOVE BOTTOM NAV */}
+      <div className="h-32 bg-black/95 pb-8 pt-4 flex items-center justify-around px-8 shrink-0 border-t border-neutral-800">
         {!previewUrl ? (
           <>
             <div className="w-12"></div>
             <button 
               onClick={handleCapture}
-              className="w-16 h-16 rounded-full border-4 border-white flex items-center justify-center active:scale-95 transition-transform"
+              className="w-16 h-16 rounded-full border-4 border-white flex items-center justify-center active:scale-95 transition-transform cursor-pointer shadow-lg"
             >
               <div className="w-12 h-12 bg-white rounded-full"></div>
             </button>
-            <div className="w-12 text-white">
-              <Camera size={28} className="mx-auto opacity-50" />
+            <div className="w-12 text-white text-center">
+              <Camera size={26} className="mx-auto opacity-60" />
             </div>
           </>
         ) : (
           <>
-            <button onClick={handleRetake} className="flex flex-col items-center text-white">
-              <RotateCcw size={24} className="mb-1" />
-              <span className="text-xs">Retake</span>
+            <button onClick={handleRetake} className="flex flex-col items-center text-neutral-300 hover:text-white transition-colors cursor-pointer">
+              <RotateCcw size={22} className="mb-1" />
+              <span className="text-xs font-semibold">Retake</span>
             </button>
-            <button onClick={handleConfirm} className="flex items-center gap-2 bg-primary px-6 py-3 rounded-full text-white font-bold">
+            <button onClick={handleConfirm} className="flex items-center gap-2 bg-primary hover:bg-primary-dark px-6 py-3.5 rounded-full text-white font-black shadow-lg transition-transform active:scale-95 cursor-pointer">
               <Check size={20} />
               Use Photo
             </button>

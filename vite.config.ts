@@ -18,22 +18,22 @@ export default defineConfig({
         name: 'Converge-DTRS',
         short_name: 'DTRS',
         description: 'Attendance Monitoring System for Converge',
-        theme_color: '#F97316', // Orange
-        background_color: '#ffffff',
+        theme_color: '#0B192C',
+        background_color: '#0B192C',
         display: 'standalone',
         icons: [
           {
-            src: 'pwa-192x192.png',
+            src: '/app-icon.png',
             sizes: '192x192',
             type: 'image/png'
           },
           {
-            src: 'pwa-512x512.png',
+            src: '/app-icon.png',
             sizes: '512x512',
             type: 'image/png'
           },
           {
-            src: 'pwa-512x512.png',
+            src: '/app-icon.png',
             sizes: '512x512',
             type: 'image/png',
             purpose: 'any maskable'
@@ -44,7 +44,7 @@ export default defineConfig({
   ],
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src'),
+      '@': path.resolve(import.meta.dirname, './src'),
     },
   },
 });

@@ -19,20 +19,20 @@ export default function AppLayout() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-neutral-100">
+    <div className="flex flex-col min-h-screen bg-slate-100 items-center justify-center font-sans antialiased">
       {/* Network Status Bar */}
       {(!isOnline || isSyncing) && (
-        <div className={`px-4 py-1.5 text-xs font-medium text-white flex items-center justify-center gap-2 ${!isOnline ? 'bg-red-500' : 'bg-secondary'}`}>
+        <div className={`w-full max-w-lg px-4 py-2 text-xs font-semibold text-white flex items-center justify-center gap-2 z-50 ${!isOnline ? 'bg-red-500' : 'bg-secondary'}`}>
           {!isOnline ? (
-            <><WifiOff size={14} /> Offline Mode — Records saved locally</>
+            <><WifiOff size={14} /> Offline Mode — Logs saved locally</>
           ) : (
-            <><RefreshCw size={14} className="animate-spin" /> Syncing records...</>
+            <><RefreshCw size={14} className="animate-spin" /> Syncing records with Supabase...</>
           )}
         </div>
       )}
 
-      {/* Main Content Area */}
-      <main className="flex-1 w-full max-w-md mx-auto bg-white shadow-sm overflow-y-auto pb-20 relative min-h-screen">
+      {/* Main Responsive Mobile Viewport Shell */}
+      <main className="w-full max-w-lg mx-auto bg-white shadow-xl min-h-screen md:min-h-[92vh] md:my-4 md:rounded-3xl md:border md:border-neutral-200/80 overflow-y-auto pb-32 relative flex flex-col">
         <Outlet />
       </main>
 
