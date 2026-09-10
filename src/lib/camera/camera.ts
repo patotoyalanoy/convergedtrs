@@ -1,8 +1,14 @@
 export class CameraService {
-  static async startCamera(videoElement: HTMLVideoElement): Promise<MediaStream> {
+  static async startCamera(videoElement: HTMLVideoElement, facingMode: 'user' | 'environment' = 'user'): Promise<MediaStream> {
     try {
+      // Stop existing tracks if any stream is already attached
+      if (videoElement.srcObject) {
+        const existingStream = videoElement.srcObject as MediaStream;
+        existingStream.getTracks().forEach(t => t.stop());
+      }
+
       const stream = await navigator.mediaDevices.getUserMedia({ 
-        video: { facingMode: 'user' },
+        video: { facingMode: { ideal: facingMode } },
         audio: false 
       });
       videoElement.srcObject = stream;
@@ -13,18 +19,21 @@ export class CameraService {
     }
   }
 
-  static capturePhoto(videoElement: HTMLVideoElement): Blob | null {
+  static capturePhoto(videoElement: HTMLVideoElement, isMirrored: boolean = false): Blob | null {
     const canvas = document.createElement('canvas');
-    canvas.width = videoElement.videoWidth;
-    canvas.height = videoElement.videoHeight;
+    canvas.width = videoElement.videoWidth || 1280;
+    canvas.height = videoElement.videoHeight || 720;
     const ctx = canvas.getContext('2d');
     if (!ctx) return null;
     
+    if (isMirrored) {
+      ctx.translate(canvas.width, 0);
+      ctx.scale(-1, 1);
+    }
+
     ctx.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
     
-    let blobData: Blob | null = null;
-    // Synchronous data URL fallback, but ideally use toBlob for better performance
-    const dataUrl = canvas.toDataURL('image/jpeg/gif/webp/jpg/', 0.8);
+    const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
     return this.dataURItoBlob(dataUrl);
   }
 
