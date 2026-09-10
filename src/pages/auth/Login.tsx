@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { Delete, Loader2, WifiOff } from 'lucide-react';
 import { clsx } from 'clsx';
 import { supabase } from '@/lib/supabase/client';
+import { db } from '@/lib/indexedDB';
 
 type LoginRole = 'employee' | 'admin';
 const MAX_ATTEMPTS = 5;
@@ -61,6 +62,37 @@ export default function Login() {
     setLoading(true);
     setError(null);
 
+    if (!isOnline) {
+      // Try offline cached credentials
+      try {
+        const cached = await db.auth.where('pinHash').equals(pin).first();
+        if (cached && cached.role === role) {
+          // Use the cached user info to set auth store
+          login(
+            {
+              id: cached.id,
+              name: cached.name,
+              email: cached.email || '',
+              role: cached.role as any,
+              // Additional fields may be added as needed
+            } as any,
+            cached.role as any
+          );
+          navigate(cached.role === 'admin' ? '/admin' : '/');
+          setLoading(false);
+          return;
+        } else {
+          setError('No cached credentials available for offline login.');
+          setLoading(false);
+          return;
+        }
+      } catch (e) {
+        console.error('Offline login error:', e);
+        setError('Failed to access offline cache.');
+        setLoading(false);
+        return;
+      }
+    }
     try {
       if (role === 'admin') {
         // Query admin_users table in Supabase by pin_hash
@@ -87,6 +119,16 @@ export default function Login() {
             } as any,
             'admin'
           );
+          // Cache admin credentials for offline use
+          await db.auth.put({
+            id: adminObj.id,
+            token: '', // token not used offline
+            name: adminObj.name || 'Admin User',
+            role: adminObj.role || 'admin',
+            pinHash: pin,
+            expiresAt: Date.now() + 24 * 60 * 60 * 1000,
+            email: adminObj.email || 'admin@converge.com',
+          });
           navigate('/admin');
           setLoading(false);
           return;
@@ -117,6 +159,16 @@ export default function Login() {
             } as any,
             'employee'
           );
+          // Cache employee credentials for offline use
+          await db.auth.put({
+            id: empObj.id,
+            token: '', // not used offline
+            name: empObj.name,
+            role: empObj.role || 'Technician',
+            pinHash: pin,
+            expiresAt: Date.now() + 24 * 60 * 60 * 1000,
+            // email may not be present for employees; optional
+          });
           navigate('/');
           setLoading(false);
           return;

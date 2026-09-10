@@ -143,7 +143,7 @@ export default function Home() {
             >
               {sitesList.map((site) => (
                 <option key={site.id} value={site.id}>
-                  📍 {site.name} ({site.geofence_radius}m radius)
+                    📍 {site.name}
                 </option>
               ))}
             </select>
@@ -156,9 +156,6 @@ export default function Home() {
           </div>
           <div>
             <h3 className="font-black text-navy-900 text-base">{selectedSite?.name || 'Converge Field Site'}</h3>
-            <p className="text-xs text-slate-500 font-semibold mt-0.5">
-              Geofence Radius: {selectedSite?.geofence_radius || 100}m
-            </p>
             {selectedSite?.latitude && selectedSite?.longitude && (
               <p className="text-[11px] font-mono font-bold text-slate-400 mt-1">
                 Coordinates: {selectedSite.latitude.toFixed(4)}, {selectedSite.longitude.toFixed(4)}
