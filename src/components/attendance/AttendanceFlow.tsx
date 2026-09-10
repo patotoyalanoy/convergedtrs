@@ -150,6 +150,7 @@ export default function AttendanceFlow({ type, initialSite, sitesList: propSites
   if (step === 'location') {
     return (
       <LocationVerification 
+        type={type}
         site={assignedSite}
         onVerified={handleLocationVerified} 
         onCancel={() => setStep('camera')} 
@@ -174,28 +175,83 @@ export default function AttendanceFlow({ type, initialSite, sitesList: propSites
   }
 
   if (step === 'success') {
+    const now = new Date();
+    const formattedDate = now.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+    const formattedTime = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+    const isTimeIn = type === 'TIME_IN';
+
     return (
-      <div className="absolute inset-0 z-50 bg-white flex flex-col items-center justify-center p-6 text-center">
-        <CheckCircle2 size={80} className="text-green-500 mb-6 animate-bounce" />
-        <h2 className="text-2xl font-bold text-neutral-800 mb-2">Attendance Recorded!</h2>
-        <p className="text-neutral-500 mb-8 text-sm">Your photo, location ({customSiteName}), Leaflet coordinates, and team list have been saved.</p>
-        
-        <div className="bg-neutral-50 p-6 rounded-2xl w-full max-w-xs mb-8 border border-neutral-100 shadow-sm">
-          <p className="text-primary font-bold mb-2">{type === 'TIME_IN' ? 'Time In' : 'Time Out'}</p>
-          <p className="text-sm text-neutral-500 mb-1">{new Date().toLocaleDateString()}</p>
-          <p className="text-3xl font-black text-secondary">
-            {new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
-          </p>
+      <div className="absolute inset-0 z-50 bg-gradient-to-b from-green-50 via-white to-orange-50 flex flex-col items-center justify-center p-6 text-center overflow-hidden">
+        {/* Decorative background circles */}
+        <div className="absolute top-10 left-10 w-32 h-32 bg-green-100 rounded-full opacity-40 blur-2xl" />
+        <div className="absolute bottom-20 right-8 w-40 h-40 bg-orange-100 rounded-full opacity-40 blur-2xl" />
+        <div className="absolute top-1/3 right-12 w-20 h-20 bg-blue-100 rounded-full opacity-30 blur-xl" />
+
+        {/* Animated success icon with ring */}
+        <div className="relative mb-5">
+          <div className="absolute inset-0 w-24 h-24 rounded-full bg-green-100 animate-ping opacity-30" />
+          <div className="relative w-24 h-24 rounded-full bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center shadow-lg shadow-green-200">
+            <CheckCircle2 size={48} className="text-white" strokeWidth={2.5} />
+          </div>
         </div>
-        
-        <button 
+
+        {/* Title & subtitle */}
+        <h2 className="text-2xl font-extrabold text-neutral-800 mb-1 tracking-tight">
+          {isTimeIn ? '🎉 Clocked In!' : '👋 Clocked Out!'}
+        </h2>
+        <p className="text-neutral-500 text-sm mb-6 max-w-xs leading-relaxed">
+          Your attendance has been successfully recorded and saved.
+        </p>
+
+        {/* Info card */}
+        <div className="bg-white/80 backdrop-blur-sm p-5 rounded-2xl w-full max-w-xs mb-4 border border-neutral-100 shadow-md space-y-4">
+          {/* Type badge */}
+          <div className="flex items-center justify-center">
+            <span className={`inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider ${
+              isTimeIn
+                ? 'bg-green-100 text-green-700'
+                : 'bg-orange-100 text-orange-700'
+            }`}>
+              <span className={`w-2 h-2 rounded-full ${isTimeIn ? 'bg-green-500' : 'bg-orange-500'}`} />
+              {isTimeIn ? 'Time In' : 'Time Out'}
+            </span>
+          </div>
+
+          {/* Time display */}
+          <div>
+            <p className="text-4xl font-black text-neutral-800 tracking-tight">
+              {formattedTime}
+            </p>
+            <p className="text-xs text-neutral-400 mt-1">{formattedDate}</p>
+          </div>
+
+          {/* Divider */}
+          <div className="border-t border-dashed border-neutral-200" />
+
+          {/* Site info */}
+          <div className="flex items-center justify-center gap-2 text-sm text-neutral-600">
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+              <circle cx="12" cy="10" r="3" />
+            </svg>
+            <span className="font-semibold">{customSiteName}</span>
+          </div>
+        </div>
+
+        {/* Subtle note */}
+        <p className="text-[11px] text-neutral-400 mb-6 max-w-[260px] leading-snug">
+          Photo, GPS coordinates, and team list have been saved. Data will sync automatically when online.
+        </p>
+
+        {/* Back to Home button */}
+        <button
           onClick={() => {
             onComplete();
             onClose();
           }}
-          className="w-full max-w-xs bg-primary text-white font-bold py-4 rounded-xl shadow-sm text-lg active:scale-95 transition-transform"
+          className="w-full max-w-xs bg-gradient-to-r from-primary to-primary-dark text-white font-bold py-4 rounded-2xl shadow-lg shadow-primary/20 text-base active:scale-[0.97] transition-all duration-150 hover:shadow-xl"
         >
-          Back to Home
+          ← Back to Home
         </button>
       </div>
     );

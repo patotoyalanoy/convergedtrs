@@ -183,14 +183,19 @@ export default function AttendanceConfirmation({
           <button 
             onClick={handleFinalConfirm}
             disabled={isSaving}
-            className="w-full bg-primary hover:bg-primary-dark text-white font-bold py-4 px-4 rounded-xl shadow-lg text-base flex justify-center items-center gap-2 transition-transform active:scale-98 disabled:opacity-70 cursor-pointer"
+            className={clsx(
+              "w-full text-white font-black py-4 px-4 rounded-2xl shadow-xl text-base flex justify-center items-center gap-2 transition-all active:scale-[0.97] disabled:opacity-70 cursor-pointer",
+              type === 'TIME_IN'
+                ? "bg-gradient-to-r from-emerald-500 via-emerald-600 to-teal-600 hover:from-emerald-600 hover:to-teal-700 shadow-emerald-500/25"
+                : "bg-gradient-to-r from-orange-500 via-orange-600 to-rose-600 hover:from-orange-600 hover:to-rose-700 shadow-orange-500/25"
+            )}
           >
             {isSaving ? (
               <span className="animate-pulse">Saving Attendance...</span>
             ) : (
               <>
                 <CheckCircle size={22} />
-                CONFIRM & SUBMIT ATTENDANCE
+                CONFIRM & SUBMIT {type === 'TIME_IN' ? 'TIME IN' : 'TIME OUT'}
               </>
             )}
           </button>

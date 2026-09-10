@@ -1,18 +1,21 @@
 import { useEffect, useState } from 'react';
 import { LocationService } from '@/services/locationService';
 import { calculateDistance } from '@/lib/geolocation/haversine';
-import { GeoLocation, VerificationStatus } from '@/types';
+import { AttendanceType, GeoLocation, VerificationStatus } from '@/types';
 import { Loader2, ArrowLeft, Navigation, CheckCircle2, Edit3 } from 'lucide-react';
 import { clsx } from 'clsx';
 import LeafletMap from '../maps/LeafletMap';
 
 interface Props {
+  type?: AttendanceType;
   site: { latitude: number; longitude: number; name: string; geofenceRadius: number };
   onVerified: (location: GeoLocation, distance: number, status: VerificationStatus, customLocationName?: string) => void;
   onCancel: () => void;
 }
 
-export default function LocationVerification({ site, onVerified, onCancel }: Props) {
+export default function LocationVerification({ type, site, onVerified, onCancel }: Props) {
+  const isTimeIn = type === 'TIME_IN';
+
   const [location, setLocation] = useState<GeoLocation | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -149,7 +152,12 @@ export default function LocationVerification({ site, onVerified, onCancel }: Pro
             <div className="pt-2 pb-6 mt-auto shrink-0">
               <button 
                 onClick={handleContinue}
-                className="w-full bg-primary hover:bg-primary-dark text-white font-bold py-3.5 px-4 rounded-xl shadow-lg text-base transition-transform active:scale-98 flex items-center justify-center gap-2 cursor-pointer"
+                className={clsx(
+                  "w-full text-white font-bold py-4 px-4 rounded-2xl shadow-lg text-base transition-all active:scale-[0.97] flex items-center justify-center gap-2 cursor-pointer",
+                  isTimeIn 
+                    ? "bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 shadow-emerald-500/20"
+                    : "bg-gradient-to-r from-orange-500 to-rose-600 hover:from-orange-600 hover:to-rose-700 shadow-orange-500/20"
+                )}
               >
                 Confirm Location & Continue
               </button>

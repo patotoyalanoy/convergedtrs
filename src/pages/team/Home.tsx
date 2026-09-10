@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { format } from 'date-fns';
-import { CheckCircle2, MapPin, Clock, LogIn, LogOut, Navigation, Sparkles } from 'lucide-react';
+import { CheckCircle2, MapPin, Clock, LogIn, LogOut, Navigation, Sparkles, ChevronRight } from 'lucide-react';
 import AttendanceFlow from '@/components/attendance/AttendanceFlow';
 import { AttendanceType } from '@/types';
 import { AttendanceService } from '@/services/attendance/attendanceService';
@@ -32,12 +32,17 @@ export default function Home() {
 
   useEffect(() => {
     async function loadSiteAndStatus() {
-      // 1. Fetch user attendance status
+      // 1. Fetch user attendance status (today only)
       const records = await AttendanceService.getLocalRecords();
-      const userRecords = records.filter(r => r.employeeId === user?.id);
+      const todayStart = new Date();
+      todayStart.setHours(0, 0, 0, 0);
+      const userRecords = records
+        .filter(r => r.employeeId === user?.id && new Date(r.recordedAt).getTime() >= todayStart.getTime());
       if (userRecords.length > 0) {
         userRecords.sort((a, b) => new Date(b.recordedAt).getTime() - new Date(a.recordedAt).getTime());
         setLastRecordType(userRecords[0].type);
+      } else {
+        setLastRecordType(null); // No records today — show "Not Timed In"
       }
 
       // 2. Fetch all assigned sites from Supabase sites table
@@ -169,18 +174,32 @@ export default function Home() {
       <div className="flex flex-col gap-3.5 mt-auto pt-2 pb-6">
         <button 
           onClick={() => handleAttendance('TIME_IN')}
-          className="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-black py-4 px-6 rounded-2xl shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-3 text-lg transition-all active:scale-98 cursor-pointer"
+          className="relative w-full bg-gradient-to-r from-emerald-500 via-emerald-600 to-teal-600 hover:from-emerald-600 hover:via-emerald-700 hover:to-teal-700 text-white font-black py-5 px-6 rounded-2xl shadow-xl shadow-emerald-500/25 flex items-center justify-center gap-3 text-lg transition-all duration-200 active:scale-[0.97] cursor-pointer overflow-hidden"
         >
-          <LogIn size={24} />
-          TIME IN NOW
+          <span className="absolute inset-0 bg-white/10 rounded-2xl animate-pulse pointer-events-none" />
+          <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center backdrop-blur-sm">
+            <LogIn size={22} />
+          </div>
+          <div className="flex flex-col items-start">
+            <span className="text-lg leading-tight">TIME IN NOW</span>
+            <span className="text-[10px] font-semibold text-emerald-100 opacity-80">Record your arrival</span>
+          </div>
+          <ChevronRight size={20} className="ml-auto opacity-60" />
         </button>
 
         <button 
           onClick={() => handleAttendance('TIME_OUT')}
-          className="w-full bg-white hover:bg-neutral-50 text-slate-800 border-2 border-slate-300 font-black py-4 px-6 rounded-2xl shadow-sm flex items-center justify-center gap-3 text-lg transition-all active:scale-98 cursor-pointer"
+          className="relative w-full bg-gradient-to-r from-orange-500 via-orange-600 to-rose-600 hover:from-orange-600 hover:via-orange-700 hover:to-rose-700 text-white font-black py-5 px-6 rounded-2xl shadow-xl shadow-orange-500/25 flex items-center justify-center gap-3 text-lg transition-all duration-200 active:scale-[0.97] cursor-pointer overflow-hidden"
         >
-          <LogOut size={24} className="text-slate-600" />
-          TIME OUT NOW
+          <span className="absolute inset-0 bg-white/10 rounded-2xl animate-pulse pointer-events-none" />
+          <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center backdrop-blur-sm">
+            <LogOut size={22} />
+          </div>
+          <div className="flex flex-col items-start">
+            <span className="text-lg leading-tight">TIME OUT NOW</span>
+            <span className="text-[10px] font-semibold text-orange-100 opacity-80">Record your departure</span>
+          </div>
+          <ChevronRight size={20} className="ml-auto opacity-60" />
         </button>
       </div>
 
@@ -202,7 +221,10 @@ export default function Home() {
             longitude: s.longitude,
             geofenceRadius: s.geofence_radius
           }))}
-          onComplete={() => console.log('Attendance completed')}
+          onComplete={() => {
+            // Update the status to reflect the action just completed
+            if (activeFlow) setLastRecordType(activeFlow);
+          }}
           onClose={() => setActiveFlow(null)}
         />
       )}

@@ -216,11 +216,16 @@ export default function AttendanceHistory() {
                   {(hasPhoto || hasMap) && (
                     <button
                       onClick={() => setExpandedId(isExpanded ? null : record.id)}
-                      className="mt-3 w-full flex items-center justify-center gap-2 text-[11px] font-bold text-primary py-1.5 rounded-lg bg-primary/5 hover:bg-primary/10 transition-colors"
+                      className={clsx(
+                        "mt-3 w-full flex items-center justify-center gap-2 text-[11px] font-bold py-2.5 rounded-xl transition-all duration-200 active:scale-[0.97] cursor-pointer",
+                        isExpanded
+                          ? "text-white bg-primary shadow-md shadow-primary/20"
+                          : "text-primary bg-primary/5 hover:bg-primary/10 border border-primary/10"
+                      )}
                     >
                       {hasPhoto && <Image size={13} />}
                       {hasMap && <Navigation2 size={13} />}
-                      {isExpanded ? 'Hide Details' : 'Show Photo & Location'}
+                      {isExpanded ? '✕ Hide Details' : '📎 Show Photo & Location'}
                     </button>
                   )}
                 </div>

@@ -136,10 +136,10 @@ export default function TeamInfo() {
                 key={role}
                 onClick={() => setSelectedRoleFilter(role)}
                 className={clsx(
-                  "px-3 py-1 rounded-lg text-[11px] transition-all cursor-pointer",
+                  "px-3.5 py-1.5 rounded-xl text-[11px] transition-all duration-150 cursor-pointer font-extrabold active:scale-[0.95]",
                   selectedRoleFilter === role 
-                    ? "bg-primary text-white shadow-xs" 
-                    : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200"
+                    ? "bg-gradient-to-r from-primary to-primary-dark text-white shadow-md shadow-primary/15" 
+                    : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200 border border-neutral-200"
                 )}
               >
                 {role === 'all' ? 'All Roles' : role}
@@ -210,14 +210,14 @@ export default function TeamInfo() {
                   <div className="flex gap-2">
                     <button 
                       onClick={() => setActiveContactMember(member)}
-                      className="p-2 rounded-xl bg-neutral-100 hover:bg-neutral-200 text-neutral-700 transition-colors cursor-pointer"
+                      className="p-2.5 rounded-xl bg-neutral-100 hover:bg-neutral-200 text-neutral-700 transition-all duration-150 cursor-pointer active:scale-[0.9] shadow-sm"
                       title="Contact Member"
                     >
                       <Phone size={14} />
                     </button>
                     <button 
                       onClick={() => setActiveContactMember(member)}
-                      className="p-2 rounded-xl bg-primary/10 hover:bg-primary/20 text-primary transition-colors cursor-pointer"
+                      className="p-2.5 rounded-xl bg-primary/10 hover:bg-primary/20 text-primary transition-all duration-150 cursor-pointer active:scale-[0.9] shadow-sm"
                       title="Email Member"
                     >
                       <Mail size={14} />
@@ -266,7 +266,7 @@ export default function TeamInfo() {
 
             <button 
               onClick={() => setActiveContactMember(null)}
-              className="w-full py-3 bg-neutral-900 text-white rounded-xl font-bold text-xs hover:bg-neutral-800 cursor-pointer"
+              className="w-full py-3.5 bg-gradient-to-r from-neutral-800 to-neutral-900 text-white rounded-xl font-bold text-xs hover:shadow-lg shadow-md cursor-pointer transition-all duration-150 active:scale-[0.97]"
             >
               Close Details
             </button>

@@ -253,9 +253,9 @@ export default function Profile() {
             </span>
             <button 
               onClick={() => setShowPinModal(true)}
-              className="text-primary font-bold hover:underline flex items-center gap-1 cursor-pointer"
+              className="text-primary font-bold flex items-center gap-1 cursor-pointer bg-primary/5 hover:bg-primary/10 px-3 py-1.5 rounded-lg transition-all duration-150 active:scale-[0.95]"
             >
-              Update 4-Digit PIN <ChevronRight size={13} />
+              Update PIN <ChevronRight size={13} />
             </button>
           </div>
         </div>
@@ -308,16 +308,23 @@ export default function Profile() {
           </div>
           <div className="flex items-center justify-between text-neutral-600 pt-1 border-t border-neutral-100">
             <span className="font-semibold flex items-center gap-1.5"><CircleHelp size={14} /> Help & Administrator Support</span>
-            <button onClick={() => alert('Support contact: admin@converge.com')} className="text-primary font-bold hover:underline cursor-pointer">Contact Admin</button>
+            <button onClick={() => alert('Support contact: admin@converge.com')} className="text-primary font-bold cursor-pointer bg-primary/5 hover:bg-primary/10 px-3 py-1.5 rounded-lg transition-all duration-150 active:scale-[0.95]">Contact Admin</button>
           </div>
         </div>
 
         {/* ── Sign Out Button ── */}
         <button 
           onClick={() => setShowConfirmLogout(true)}
-          className="w-full mt-4 flex items-center justify-center gap-2 bg-red-50 text-red-600 hover:bg-red-100 py-4 px-4 rounded-2xl font-black text-sm transition-all border border-red-200 active:scale-98 cursor-pointer shadow-sm"
+          className="w-full mt-4 flex items-center justify-center gap-3 bg-gradient-to-r from-red-50 to-red-100/80 text-red-600 hover:from-red-100 hover:to-red-200/80 py-5 px-5 rounded-2xl font-black text-sm transition-all duration-200 border border-red-200/80 active:scale-[0.97] cursor-pointer shadow-sm"
         >
-          <LogOut size={18} /> Sign Out Account
+          <div className="w-10 h-10 rounded-xl bg-red-100 flex items-center justify-center">
+            <LogOut size={20} />
+          </div>
+          <div className="flex flex-col items-start">
+            <span>Sign Out Account</span>
+            <span className="text-[10px] font-semibold text-red-400">End your current session</span>
+          </div>
+          <ChevronRight size={18} className="ml-auto text-red-300" />
         </button>
 
       </div>
@@ -347,16 +354,16 @@ export default function Profile() {
               </p>
             )}
 
-            <div className="flex gap-2 pt-2">
+            <div className="flex gap-2.5 pt-2">
               <button 
                 onClick={() => { setShowPinModal(false); setNewPin(''); setPinMessage(null); }}
-                className="flex-1 py-3 rounded-xl font-bold text-xs bg-neutral-100 text-neutral-700 hover:bg-neutral-200"
+                className="flex-1 py-3.5 rounded-xl font-bold text-xs bg-neutral-100 text-neutral-700 hover:bg-neutral-200 transition-all duration-150 active:scale-[0.96] cursor-pointer"
               >
                 Cancel
               </button>
               <button 
                 onClick={handleChangePin}
-                className="flex-1 py-3 rounded-xl font-bold text-xs bg-primary text-white hover:bg-primary-dark shadow-md"
+                className="flex-1 py-3.5 rounded-xl font-bold text-xs bg-gradient-to-r from-primary to-primary-dark text-white hover:shadow-lg hover:shadow-primary/20 shadow-md transition-all duration-150 active:scale-[0.96] cursor-pointer"
               >
                 Save New PIN
               </button>
@@ -378,13 +385,13 @@ export default function Profile() {
             <div className="flex gap-3 pt-2">
               <button 
                 onClick={() => setShowConfirmLogout(false)}
-                className="flex-1 py-3 rounded-xl font-bold text-xs bg-neutral-100 text-neutral-700 hover:bg-neutral-200 cursor-pointer"
+                className="flex-1 py-3.5 rounded-xl font-bold text-xs bg-neutral-100 text-neutral-700 hover:bg-neutral-200 cursor-pointer transition-all duration-150 active:scale-[0.96]"
               >
                 Stay Logged In
               </button>
               <button 
                 onClick={handleLogout}
-                className="flex-1 py-3 rounded-xl font-bold text-xs bg-red-600 text-white hover:bg-red-700 shadow-md cursor-pointer"
+                className="flex-1 py-3.5 rounded-xl font-bold text-xs bg-gradient-to-r from-red-600 to-red-700 text-white hover:shadow-lg hover:shadow-red-500/20 shadow-md cursor-pointer transition-all duration-150 active:scale-[0.96]"
               >
                 Yes, Sign Out
               </button>
