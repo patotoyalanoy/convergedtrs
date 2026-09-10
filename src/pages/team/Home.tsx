@@ -8,12 +8,22 @@ import { AttendanceService } from '@/services/attendance/attendanceService';
 import { supabase } from '@/lib/supabase/client';
 import { clsx } from 'clsx';
 
+interface SiteOption {
+  id: string;
+  name: string;
+  geofence_radius: number;
+  latitude: number;
+  longitude: number;
+}
+
 export default function Home() {
   const { user } = useAuthStore();
   const [currentTime, setCurrentTime] = useState(new Date());
   const [activeFlow, setActiveFlow] = useState<AttendanceType | null>(null);
   const [lastRecordType, setLastRecordType] = useState<AttendanceType | null>(null);
-  const [assignedSite, setAssignedSite] = useState<{ name: string; info: string; lat?: number; lng?: number } | null>(null);
+  const [sitesList, setSitesList] = useState<SiteOption[]>([]);
+  const [selectedSiteId, setSelectedSiteId] = useState<string>('');
+  const [selectedSite, setSelectedSite] = useState<SiteOption | null>(null);
 
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
@@ -30,20 +40,23 @@ export default function Home() {
         setLastRecordType(userRecords[0].type);
       }
 
-      // 2. Fetch assigned site from Supabase sites table
+      // 2. Fetch all assigned sites from Supabase sites table
       try {
-        const { data: sites } = await supabase.from('sites').select('*').limit(1);
+        const { data: sites } = await supabase.from('sites').select('*').order('created_at', { ascending: false });
         if (sites && sites.length > 0) {
-          const site = sites[0];
-          setAssignedSite({
-            name: site.name,
-            info: `Geofence Radius: ${site.geofence_radius || 100}m`,
-            lat: site.latitude,
-            lng: site.longitude
-          });
+          const mapped: SiteOption[] = sites.map(s => ({
+            id: s.id,
+            name: s.name,
+            geofence_radius: s.geofence_radius || 100,
+            latitude: s.latitude || 14.5547,
+            longitude: s.longitude || 121.0244,
+          }));
+          setSitesList(mapped);
+          setSelectedSiteId(mapped[0].id);
+          setSelectedSite(mapped[0]);
         }
       } catch (e) {
-        console.warn('Could not load site from Supabase:', e);
+        console.warn('Could not load sites from Supabase:', e);
       }
     }
     loadSiteAndStatus();
@@ -101,26 +114,54 @@ export default function Home() {
         </div>
       </div>
 
-      {/* ── Assigned Location Card ── */}
+      {/* ── Assigned Location Card with Site Dropdown Selector ── */}
       <div className="bg-white p-5 rounded-2xl shadow-sm border border-neutral-200/70 mb-6">
         <div className="flex items-center justify-between mb-3">
-          <span className="text-xs font-bold text-neutral-400 uppercase tracking-wider flex items-center gap-1">
-            <Navigation size={13} className="text-primary" /> Assigned Site
+          <span className="text-xs font-bold text-navy-900 uppercase tracking-wider flex items-center gap-1">
+            <Navigation size={13} className="text-primary" /> Select Attendance Site
           </span>
-          <span className="text-[10px] font-bold bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-md border border-emerald-200">
+          <span className="text-[10px] font-extrabold bg-emerald-50 text-emerald-800 px-2 py-0.5 rounded-md border border-emerald-200/80">
             GPS Geofenced
           </span>
         </div>
-        <div className="flex items-start gap-3">
-          <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0 mt-0.5 font-bold">
+
+        {/* Dropdown to select site */}
+        {sitesList.length > 0 && (
+          <div className="mb-3">
+            <label className="block text-[10px] font-extrabold text-slate-500 uppercase tracking-wider mb-1">
+              Choose Site / Geofence Target:
+            </label>
+            <select
+              value={selectedSiteId}
+              onChange={(e) => {
+                const sId = e.target.value;
+                setSelectedSiteId(sId);
+                const found = sitesList.find(s => s.id === sId);
+                if (found) setSelectedSite(found);
+              }}
+              className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-extrabold text-navy-900 shadow-2xs focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none cursor-pointer"
+            >
+              {sitesList.map((site) => (
+                <option key={site.id} value={site.id}>
+                  📍 {site.name} ({site.geofence_radius}m radius)
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+
+        <div className="flex items-start gap-3 pt-2 border-t border-slate-100">
+          <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0 mt-0.5 font-bold shadow-2xs">
             <MapPin size={20} />
           </div>
           <div>
-            <h3 className="font-extrabold text-neutral-800 text-base">{assignedSite?.name || 'Converge Field Site'}</h3>
-            <p className="text-xs text-neutral-500 font-medium mt-0.5">{assignedSite?.info || 'Active Supabase Geofenced Location'}</p>
-            {assignedSite?.lat && assignedSite?.lng && (
-              <p className="text-[11px] font-mono text-neutral-400 mt-1">
-                Coordinates: {assignedSite.lat.toFixed(4)}, {assignedSite.lng.toFixed(4)}
+            <h3 className="font-black text-navy-900 text-base">{selectedSite?.name || 'Converge Field Site'}</h3>
+            <p className="text-xs text-slate-500 font-semibold mt-0.5">
+              Geofence Radius: {selectedSite?.geofence_radius || 100}m
+            </p>
+            {selectedSite?.latitude && selectedSite?.longitude && (
+              <p className="text-[11px] font-mono font-bold text-slate-400 mt-1">
+                Coordinates: {selectedSite.latitude.toFixed(4)}, {selectedSite.longitude.toFixed(4)}
               </p>
             )}
           </div>
@@ -150,6 +191,20 @@ export default function Home() {
       {activeFlow && (
         <AttendanceFlow
           type={activeFlow}
+          initialSite={selectedSite ? {
+            id: selectedSite.id,
+            name: selectedSite.name,
+            latitude: selectedSite.latitude,
+            longitude: selectedSite.longitude,
+            geofenceRadius: selectedSite.geofence_radius
+          } : undefined}
+          sitesList={sitesList.map(s => ({
+            id: s.id,
+            name: s.name,
+            latitude: s.latitude,
+            longitude: s.longitude,
+            geofenceRadius: s.geofence_radius
+          }))}
           onComplete={() => console.log('Attendance completed')}
           onClose={() => setActiveFlow(null)}
         />

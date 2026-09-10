@@ -8,15 +8,25 @@ import { useAuthStore } from '@/stores/useAuthStore';
 import { CheckCircle2 } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
 
+export interface SiteItem {
+  id: string;
+  name: string;
+  latitude: number;
+  longitude: number;
+  geofenceRadius: number;
+}
+
 interface Props {
   type: AttendanceType;
+  initialSite?: SiteItem;
+  sitesList?: SiteItem[];
   onComplete: () => void;
   onClose: () => void;
 }
 
 type Step = 'camera' | 'location' | 'confirm' | 'success';
 
-const DEFAULT_SITE = {
+const DEFAULT_SITE: SiteItem = {
   id: 'site-1',
   name: 'Converge Field Site',
   latitude: 14.5547,
@@ -24,7 +34,7 @@ const DEFAULT_SITE = {
   geofenceRadius: 100
 };
 
-export default function AttendanceFlow({ type, onComplete, onClose }: Props) {
+export default function AttendanceFlow({ type, initialSite, sitesList: propSitesList, onComplete, onClose }: Props) {
   const { user } = useAuthStore();
   const [step, setStep] = useState<Step>('camera');
   
@@ -35,34 +45,48 @@ export default function AttendanceFlow({ type, onComplete, onClose }: Props) {
   const [location, setLocation] = useState<GeoLocation | null>(null);
   const [distance, setDistance] = useState<number | null>(null);
   const [status, setStatus] = useState<VerificationStatus | null>(null);
-  const [customSiteName, setCustomSiteName] = useState<string>('Converge Field Site');
 
   const [isSaving, setIsSaving] = useState(false);
 
-  // Dynamic assigned site loaded from Supabase
-  const [assignedSite, setAssignedSite] = useState(DEFAULT_SITE);
+  // Dynamic assigned site loaded from props or Supabase
+  const [assignedSite, setAssignedSite] = useState<SiteItem>(initialSite || DEFAULT_SITE);
+  const [sitesList, setSitesList] = useState<SiteItem[]>(propSitesList || (initialSite ? [initialSite] : [DEFAULT_SITE]));
+  const [customSiteName, setCustomSiteName] = useState<string>(initialSite?.name || 'Converge Field Site');
 
   useEffect(() => {
-    async function fetchSite() {
-      try {
-        const { data: sites } = await supabase.from('sites').select('*').limit(1);
-        if (sites && sites.length > 0) {
-          const s = sites[0];
-          setAssignedSite({
-            id: s.id,
-            name: s.name,
-            latitude: s.latitude,
-            longitude: s.longitude,
-            geofenceRadius: s.geofence_radius || 100
-          });
-          setCustomSiteName(s.name);
-        }
-      } catch (err) {
-        console.warn('Using default site configuration:', err);
-      }
+    if (initialSite) {
+      setAssignedSite(initialSite);
+      setCustomSiteName(initialSite.name);
     }
-    fetchSite();
-  }, []);
+    if (propSitesList && propSitesList.length > 0) {
+      setSitesList(propSitesList);
+    }
+  }, [initialSite, propSitesList]);
+
+  useEffect(() => {
+    if (!initialSite) {
+      async function fetchSite() {
+        try {
+          const { data: sites } = await supabase.from('sites').select('*').order('created_at', { ascending: false });
+          if (sites && sites.length > 0) {
+            const mapped: SiteItem[] = sites.map(s => ({
+              id: s.id,
+              name: s.name,
+              latitude: s.latitude || 14.5547,
+              longitude: s.longitude || 121.0244,
+              geofenceRadius: s.geofence_radius || 100
+            }));
+            setSitesList(mapped);
+            setAssignedSite(mapped[0]);
+            setCustomSiteName(mapped[0].name);
+          }
+        } catch (err) {
+          console.warn('Using default site configuration:', err);
+        }
+      }
+      fetchSite();
+    }
+  }, [initialSite]);
 
   const handlePhotoCaptured = (blob: Blob, _url: string) => {
     setPhotoBlob(blob);
