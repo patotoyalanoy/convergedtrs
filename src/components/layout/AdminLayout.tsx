@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { NavLink, Outlet, useNavigate, Navigate } from 'react-router-dom';
 import { 
   LayoutDashboard, Users, UserSquare2, MapPin, CalendarClock, Settings, 
-  LogOut, BarChart3, RefreshCw, Menu, X, Smartphone 
+  LogOut, BarChart3, RefreshCw, Menu, X, Smartphone, AlertTriangle 
 } from 'lucide-react';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { usePwaInstall } from '@/hooks/usePwaInstall';
@@ -12,12 +12,14 @@ export default function AdminLayout() {
   const { user, logout, isAuthenticated, role } = useAuthStore();
   const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
   const { canInstall, installPwa } = usePwaInstall();
 
   if (!isAuthenticated) return <Navigate to="/login" replace />;
   if (role !== 'admin') return <Navigate to="/" replace />;
 
-  const handleLogout = () => {
+  const confirmLogout = () => {
+    setShowLogoutModal(false);
     logout();
     navigate('/login');
   };
@@ -116,7 +118,7 @@ export default function AdminLayout() {
           )}
 
           <button 
-            onClick={handleLogout}
+            onClick={() => setShowLogoutModal(true)}
             className="flex items-center gap-3 px-3.5 py-2.5 w-full rounded-xl text-xs font-bold text-slate-400 hover:bg-red-500/20 hover:text-red-300 transition-colors cursor-pointer"
           >
             <LogOut size={18} />
@@ -173,6 +175,36 @@ export default function AdminLayout() {
           <Outlet />
         </div>
       </main>
+
+      {/* Admin Logout Confirmation Modal */}
+      {showLogoutModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40">
+          <div className="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-slate-200 text-center animate-in fade-in zoom-in duration-150">
+            <div className="w-12 h-12 rounded-2xl bg-red-50 text-red-600 mx-auto flex items-center justify-center mb-4 border border-red-100 shadow-2xs">
+              <LogOut size={22} />
+            </div>
+            <h3 className="text-base font-black text-navy-900 mb-1">Confirm Admin Logout</h3>
+            <p className="text-xs text-slate-500 font-semibold mb-6">
+              Are you sure you want to end your administrator session?
+            </p>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => setShowLogoutModal(false)}
+                className="flex-1 py-2.5 px-4 rounded-xl border border-slate-200 text-slate-700 text-xs font-bold hover:bg-slate-50 transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmLogout}
+                className="flex-1 py-2.5 px-4 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-black shadow-md transition-all active:scale-95 cursor-pointer flex items-center justify-center gap-1.5"
+              >
+                <LogOut size={14} />
+                Log Out
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
