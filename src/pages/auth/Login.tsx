@@ -218,6 +218,8 @@ export default function Login() {
           <img
             src="/CSiLogo.png"
             alt="Converge IT Solutions Inc."
+            decoding="sync"
+            fetchPriority="high"
             className="h-10 object-contain mb-2"
           />
           <div

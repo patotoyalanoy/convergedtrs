@@ -128,6 +128,8 @@ export default function OjtRegister() {
           <img
             src="/CSiLogo.png"
             alt="Converge IT Solutions Inc."
+            decoding="sync"
+            fetchPriority="high"
             className="h-10 object-contain mx-auto mb-2"
           />
           <h1 className="text-xl font-black text-neutral-900 leading-tight">

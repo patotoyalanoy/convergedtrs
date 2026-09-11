@@ -13,7 +13,10 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg'],
+      includeAssets: ['CSiLogo.png', 'app-icon.png', 'favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg'],
+      workbox: {
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,webmanifest,jpg,jpeg,gif}'],
+      },
       manifest: {
         name: 'Converge-DTRS',
         short_name: 'DTRS',
