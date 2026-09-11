@@ -16,6 +16,7 @@ export default defineConfig({
       includeAssets: ['CSiLogo.png', 'app-icon.png', 'favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg'],
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,webmanifest,jpg,jpeg,gif}'],
+        maximumFileSizeToCacheInBytes: 6 * 1024 * 1024,
       },
       manifest: {
         name: 'Converge-DTRS',
