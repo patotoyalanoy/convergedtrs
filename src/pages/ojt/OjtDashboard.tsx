@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { useNavigate } from 'react-router-dom';
-import { GraduationCap, LogOut, User } from 'lucide-react';
+import { LogOut, User } from 'lucide-react';
 import OjtProgressCard from '@/components/ojt/OjtProgressCard';
 import OjtTimeControls from '@/components/ojt/OjtTimeControls';
 import OjtHistoryTable from '@/components/ojt/OjtHistoryTable';
@@ -98,8 +98,14 @@ export default function OjtDashboard() {
       <div className="bg-gradient-to-r from-primary via-orange-500 to-amber-600 rounded-b-[36px] p-6 text-white shadow-lg relative overflow-hidden">
         <div className="flex justify-between items-center mb-4 relative z-10">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center font-black text-xl border border-white/30 backdrop-blur-md">
-              <GraduationCap size={26} />
+            <div className="bg-white/95 px-3 py-1.5 rounded-2xl shadow-sm border border-white/40 flex items-center shrink-0">
+              <img
+                src="/CSiLogo.png"
+                alt="Converge IT Solutions Inc."
+                decoding="sync"
+                fetchPriority="high"
+                className="h-8 w-auto object-contain"
+              />
             </div>
             <div>
               <h2 className="font-black text-lg leading-tight">
