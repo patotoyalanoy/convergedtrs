@@ -89,7 +89,7 @@ export default function LocationVerification({ type, site, onVerified, onCancel 
         ) : (
           <div className="flex flex-col flex-1 space-y-4">
 
-            {/* 📍 TOP OF THE MAP: Location Name Input */}
+            {/* TOP OF THE MAP: Location Name Input */}
             <div className="bg-white rounded-xl p-3 border border-neutral-200 shadow-sm shrink-0">
               <label className="block text-xs font-bold text-neutral-600 uppercase tracking-wider mb-1 flex items-center gap-1.5">
                 <Edit3 size={13} className="text-primary" />

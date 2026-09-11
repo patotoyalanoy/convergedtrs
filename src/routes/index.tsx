@@ -6,6 +6,12 @@ import AdminLayout from '@/components/layout/AdminLayout';
 import Home from '@/pages/team/Home';
 import Login from '@/pages/auth/Login';
 
+// OJT Module Pages
+import OjtLogin from '@/pages/ojt/OjtLogin';
+import OjtRegister from '@/pages/ojt/OjtRegister';
+import OjtDashboard from '@/pages/ojt/OjtDashboard';
+import AdminOjtManagement from '@/pages/admin/AdminOjtManagement';
+
 // Admin Pages
 import AdminDashboard from '@/pages/admin/Dashboard';
 import AdminAttendance from '@/pages/admin/Attendance';
@@ -26,6 +32,18 @@ export const router = createBrowserRouter([
     element: <Login />,
   },
   {
+    path: '/ojt/login',
+    element: <OjtLogin />,
+  },
+  {
+    path: '/ojt/register',
+    element: <OjtRegister />,
+  },
+  {
+    path: '/ojt/dashboard',
+    element: <OjtDashboard />,
+  },
+  {
     path: '/',
     element: <AppLayout />,
     children: [
@@ -40,6 +58,7 @@ export const router = createBrowserRouter([
     element: <AdminLayout />,
     children: [
       { index: true, element: <AdminDashboard /> },
+      { path: 'ojt', element: <AdminOjtManagement /> },
       { path: 'attendance', element: <AdminAttendance /> },
       { path: 'teams', element: <Teams /> },
       { path: 'employees', element: <Employees /> },

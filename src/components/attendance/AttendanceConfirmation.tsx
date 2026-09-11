@@ -86,7 +86,7 @@ export default function AttendanceConfirmation({
           </div>
         </div>
 
-        {/* 🏷️ Dynamic Team Member Label & Addition Section */}
+        {/* Dynamic Team Member Label & Addition Section */}
         <div className="bg-white rounded-xl shadow-sm border border-neutral-200 p-4 shrink-0">
           <div className="flex items-center gap-2 mb-1.5">
             <Users size={17} className="text-primary" />

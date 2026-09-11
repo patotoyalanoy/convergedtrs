@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { NavLink, Outlet, useNavigate, Navigate } from 'react-router-dom';
 import { 
   LayoutDashboard, Users, UserSquare2, MapPin, CalendarClock, Settings, 
-  LogOut, BarChart3, RefreshCw, Menu, X, Smartphone, AlertTriangle 
+  LogOut, BarChart3, RefreshCw, Menu, X, Smartphone, AlertTriangle, GraduationCap 
 } from 'lucide-react';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { usePwaInstall } from '@/hooks/usePwaInstall';
@@ -26,6 +26,7 @@ export default function AdminLayout() {
 
   const navItems = [
     { to: '/admin', icon: LayoutDashboard, label: 'Dashboard', exact: true },
+    { to: '/admin/ojt', icon: GraduationCap, label: 'OJT Trainees' },
     { to: '/admin/teams', icon: Users, label: 'Teams' },
     { to: '/admin/employees', icon: UserSquare2, label: 'Employees' },
     { to: '/admin/sites', icon: MapPin, label: 'Sites' },

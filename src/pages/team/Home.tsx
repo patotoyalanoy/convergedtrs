@@ -148,7 +148,7 @@ export default function Home() {
             >
               {sitesList.map((site) => (
                 <option key={site.id} value={site.id}>
-                    📍 {site.name}
+                    {site.name}
                 </option>
               ))}
             </select>

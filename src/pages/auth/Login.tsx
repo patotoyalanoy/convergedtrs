@@ -344,6 +344,16 @@ export default function Login() {
           >
             {loading ? <><Loader2 size={20} className="animate-spin" /> Authenticating...</> : 'Login'}
           </button>
+
+          {/* OJT Portal Link */}
+          <div className="mt-4 pt-3 border-t border-neutral-100 text-center">
+            <a
+              href="/ojt/login"
+              className="inline-flex items-center gap-1.5 text-xs font-extrabold text-primary hover:underline bg-primary/5 px-3 py-1.5 rounded-xl border border-primary/10 transition-colors"
+            >
+              🎓 OJT Student Portal (Register & Log Attendance) →
+            </a>
+          </div>
         </div>
       </div>
 

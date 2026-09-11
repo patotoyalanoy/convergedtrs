@@ -71,7 +71,7 @@ export default function LeafletMap({ userLocation, siteLocation }: Props) {
     L.marker([userLat, userLng])
       .addTo(map)
       .bindPopup(`
-        <b>📍 Your GPS Location</b><br/>
+        <b>Your GPS Location</b><br/>
         Lat: <b>${userLat.toFixed(6)}</b><br/>
         Lng: <b>${userLng.toFixed(6)}</b><br/>
         Accuracy: ±${Math.round(userLocation.accuracy)}m
@@ -88,7 +88,7 @@ export default function LeafletMap({ userLocation, siteLocation }: Props) {
 
     const siteMarker = L.marker([siteLat, siteLng])
       .addTo(map)
-      .bindPopup(`<b>🏢 ${siteLocation.name}</b><br/>Site Radius: ${siteLocation.geofenceRadius}m`);
+      .bindPopup(`<b>${siteLocation.name}</b><br/>Site Radius: ${siteLocation.geofenceRadius}m`);
     siteMarkerRef.current = siteMarker;
 
     // Smart Bounds: If user & site are close (< 10km), fit both markers. Otherwise, focus on User Location!
@@ -124,7 +124,7 @@ export default function LeafletMap({ userLocation, siteLocation }: Props) {
   // Smoothly update site popup name without re-initializing the map
   useEffect(() => {
     if (siteMarkerRef.current) {
-      siteMarkerRef.current.setPopupContent(`<b>🏢 ${siteLocation.name}</b><br/>Site Radius: ${siteLocation.geofenceRadius}m`);
+      siteMarkerRef.current.setPopupContent(`<b>${siteLocation.name}</b><br/>Site Radius: ${siteLocation.geofenceRadius}m`);
     }
   }, [siteLocation.name, siteLocation.geofenceRadius]);
 

@@ -197,7 +197,7 @@ export default function AttendanceFlow({ type, initialSite, sitesList: propSites
 
         {/* Title & subtitle */}
         <h2 className="text-2xl font-extrabold text-neutral-800 mb-1 tracking-tight">
-          {isTimeIn ? '🎉 Clocked In!' : '👋 Clocked Out!'}
+          {isTimeIn ? 'Clocked In!' : 'Clocked Out!'}
         </h2>
         <p className="text-neutral-500 text-sm mb-6 max-w-xs leading-relaxed">
           Your attendance has been successfully recorded and saved.
