@@ -10,7 +10,7 @@ interface Props {
 export default function OjtHistoryTable({ logs, loading }: Props) {
   if (loading) {
     return (
-      <div className="bg-white rounded-3xl p-8 text-center text-neutral-400 text-xs font-semibold shadow-sm border border-neutral-200/80">
+      <div className="bg-slate-800/90 rounded-3xl p-8 text-center text-slate-400 text-xs font-semibold shadow-xl border border-slate-700/80 backdrop-blur-md">
         Loading OJT attendance history logs...
       </div>
     );
@@ -18,19 +18,19 @@ export default function OjtHistoryTable({ logs, loading }: Props) {
 
   if (!logs || logs.length === 0) {
     return (
-      <div className="bg-white rounded-3xl p-8 text-center text-neutral-400 text-xs font-semibold shadow-sm border border-neutral-200/80">
+      <div className="bg-slate-800/90 rounded-3xl p-8 text-center text-slate-400 text-xs font-semibold shadow-xl border border-slate-700/80 backdrop-blur-md">
         No OJT attendance records logged yet. Use the controls above to Time In!
       </div>
     );
   }
 
   return (
-    <div className="bg-white rounded-3xl p-5 shadow-sm border border-neutral-200/80 space-y-4">
+    <div className="bg-slate-800/90 rounded-3xl p-5 shadow-xl border border-slate-700/80 space-y-4 text-white backdrop-blur-md">
       <div className="flex items-center justify-between">
-        <h3 className="font-extrabold text-sm text-neutral-800 flex items-center gap-2">
-          <Calendar size={16} className="text-primary" /> Daily Attendance Logs ({logs.length})
+        <h3 className="font-extrabold text-sm text-white flex items-center gap-2">
+          <Calendar size={16} className="text-orange-400" /> Daily Attendance Logs ({logs.length})
         </h3>
-        <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider">
+        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
           Auto Calculated
         </span>
       </div>
@@ -44,24 +44,24 @@ export default function OjtHistoryTable({ logs, loading }: Props) {
           return (
             <div
               key={log.id}
-              className="bg-slate-50 rounded-2xl p-4 border border-slate-200/80 space-y-2.5 text-xs hover:border-slate-300 transition-all"
+              className="bg-slate-900/80 rounded-2xl p-4 border border-slate-700/80 space-y-2.5 text-xs hover:border-slate-600 transition-all"
             >
               {/* Header Row */}
               <div className="flex items-center justify-between">
-                <span className="font-extrabold text-neutral-800 flex items-center gap-1.5">
-                  <Calendar size={13} className="text-neutral-400" /> {dateStr}
+                <span className="font-extrabold text-slate-200 flex items-center gap-1.5">
+                  <Calendar size={13} className="text-slate-400" /> {dateStr}
                 </span>
                 <span
                   className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider ${
                     log.status === 'On-Time' || log.status === 'Regular'
-                      ? 'bg-emerald-100 text-emerald-700 border border-emerald-200'
+                      ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
                       : log.status === 'Late'
-                      ? 'bg-orange-100 text-orange-700 border border-orange-200'
+                      ? 'bg-orange-500/20 text-orange-300 border border-orange-500/30'
                       : log.status === 'Half-Day'
-                      ? 'bg-amber-100 text-amber-700 border border-amber-200'
+                      ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
                       : log.status === 'Overtime'
-                      ? 'bg-blue-100 text-blue-700 border border-blue-200'
-                      : 'bg-rose-100 text-rose-700 border border-rose-200'
+                      ? 'bg-blue-500/20 text-blue-300 border border-blue-500/30'
+                      : 'bg-rose-500/20 text-rose-300 border border-rose-500/30'
                   }`}
                 >
                   {log.status}
@@ -69,26 +69,26 @@ export default function OjtHistoryTable({ logs, loading }: Props) {
               </div>
 
               {/* Time Row */}
-              <div className="grid grid-cols-2 gap-2 bg-white p-2.5 rounded-xl border border-slate-100 text-neutral-700 font-semibold">
+              <div className="grid grid-cols-2 gap-2 bg-slate-800 p-2.5 rounded-xl border border-slate-700 text-slate-300 font-semibold">
                 <div>
-                  <span className="text-[10px] text-neutral-400 block font-bold uppercase">Time In</span>
-                  <span className="text-xs font-black text-emerald-600">{formattedIn}</span>
+                  <span className="text-[10px] text-slate-400 block font-bold uppercase">Time In</span>
+                  <span className="text-xs font-black text-emerald-400">{formattedIn}</span>
                 </div>
                 <div>
-                  <span className="text-[10px] text-neutral-400 block font-bold uppercase">Time Out</span>
-                  <span className="text-xs font-black text-orange-600">{formattedOut}</span>
+                  <span className="text-[10px] text-slate-400 block font-bold uppercase">Time Out</span>
+                  <span className="text-xs font-black text-orange-400">{formattedOut}</span>
                 </div>
               </div>
 
               {/* Hours Breakdown Row */}
-              <div className="flex items-center justify-between text-[11px] font-bold text-neutral-600 pt-1">
+              <div className="flex items-center justify-between text-[11px] font-bold text-slate-300 pt-1">
                 <div className="flex items-center gap-3">
-                  <span>Regular: <b className="text-neutral-900">{log.timeOut ? `${log.regularHours || 0} hrs` : 'In Progress'}</b></span>
+                  <span>Regular: <b className="text-white">{log.timeOut ? `${log.regularHours || 0} hrs` : 'In Progress'}</b></span>
                   {log.overtimeHours > 0 && (
-                    <span>OT: <b className="text-blue-600">+{log.overtimeHours} hrs</b></span>
+                    <span>OT: <b className="text-blue-400">+{log.overtimeHours} hrs</b></span>
                   )}
                 </div>
-                <span className="text-xs font-black text-primary bg-primary/10 px-2.5 py-0.5 rounded-lg border border-primary/20">
+                <span className="text-xs font-black text-orange-300 bg-primary/20 px-2.5 py-0.5 rounded-lg border border-primary/30">
                   Total: {log.timeOut 
                     ? `${log.totalHoursWorked || 0} hrs` 
                     : `In Progress (${(Math.max(0, (new Date().getTime() - new Date(log.timeIn).getTime()) / (1000 * 3600))).toFixed(1)} hrs)`}
@@ -96,7 +96,7 @@ export default function OjtHistoryTable({ logs, loading }: Props) {
               </div>
 
               {log.notes && (
-                <p className="text-[11px] text-neutral-500 font-medium italic pt-1 border-t border-slate-200/60">
+                <p className="text-[11px] text-slate-400 font-medium italic pt-1 border-t border-slate-700/60">
                   "{log.notes}"
                 </p>
               )}

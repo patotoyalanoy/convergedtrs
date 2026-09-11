@@ -39,67 +39,67 @@ export default function OjtTimeControls({ todayRecord, isCurrentlyTimedIn, onTim
   };
 
   return (
-    <div className="bg-white rounded-3xl p-5 shadow-sm border border-neutral-200/80 space-y-5">
+    <div className="bg-slate-800/90 rounded-3xl p-5 shadow-xl border border-slate-700/80 space-y-5 text-white backdrop-blur-md">
       {/* Live Clock & Schedule Header */}
-      <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+      <div className="flex items-center justify-between pb-3 border-b border-slate-700/60">
         <div>
-          <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider block">Today's Date</span>
-          <span className="text-sm font-extrabold text-neutral-800">{format(currentTime, 'EEEE, MMM dd, yyyy')}</span>
+          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Today's Date</span>
+          <span className="text-sm font-extrabold text-white">{format(currentTime, 'EEEE, MMM dd, yyyy')}</span>
         </div>
         <div className="text-right">
-          <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider block">Live Time</span>
-          <span className="text-base font-black text-primary font-mono">{format(currentTime, 'hh:mm:ss a')}</span>
+          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Live Time</span>
+          <span className="text-base font-black text-orange-400 font-mono">{format(currentTime, 'hh:mm:ss a')}</span>
         </div>
       </div>
 
       {/* Schedule Guidelines Pill */}
-      <div className="bg-slate-50 p-3 rounded-2xl border border-slate-200/80 text-xs space-y-1.5">
-        <div className="flex items-center justify-between font-bold text-slate-700">
+      <div className="bg-slate-900/80 p-3 rounded-2xl border border-slate-700/80 text-xs space-y-1.5">
+        <div className="flex items-center justify-between font-bold text-slate-200">
           <span className="flex items-center gap-1.5">
-            <Clock size={14} className="text-primary" /> Regular Schedule:
+            <Clock size={14} className="text-orange-400" /> Regular Schedule:
           </span>
-          <span className="text-primary">08:00 AM - 05:00 PM (8 hrs)</span>
+          <span className="text-orange-400">08:00 AM - 05:00 PM (8 hrs)</span>
         </div>
-        <div className="text-[11px] text-slate-500 flex flex-wrap gap-y-1 justify-between font-medium">
-          <span>Early In: <b>7:30 AM</b></span>
-          <span>Late After: <b className="text-orange-600">9:30 AM</b></span>
-          <span>Max OT: <b className="text-emerald-600">7:00 PM (10h)</b></span>
+        <div className="text-[11px] text-slate-400 flex flex-wrap gap-y-1 justify-between font-medium">
+          <span>Early In: <b className="text-slate-200">7:30 AM</b></span>
+          <span>Late After: <b className="text-orange-400">9:30 AM</b></span>
+          <span>Max OT: <b className="text-emerald-400">7:00 PM (10h)</b></span>
         </div>
       </div>
 
       {/* Options Toggles (Half Day & Overtime) */}
       {!isCurrentlyTimedIn ? (
         /* Options before Time In */
-        <div className="flex items-center justify-between bg-orange-50/60 p-3 rounded-2xl border border-orange-200/60">
+        <div className="flex items-center justify-between bg-orange-950/40 p-3 rounded-2xl border border-orange-500/30">
           <div>
-            <span className="font-extrabold text-neutral-800 text-xs flex items-center gap-1">
-              <Sun size={14} className="text-orange-500" /> Half-Day Attendance (4.0 hrs)
+            <span className="font-extrabold text-white text-xs flex items-center gap-1">
+              <Sun size={14} className="text-orange-400" /> Half-Day Attendance (4.0 hrs)
             </span>
-            <span className="text-[10px] text-neutral-500 font-medium block">Log a 4-hour morning or afternoon session</span>
+            <span className="text-[10px] text-slate-400 font-medium block">Log a 4-hour morning or afternoon session</span>
           </div>
           <button
             onClick={() => setIsHalfDay(!isHalfDay)}
             disabled={loading}
             className="text-primary cursor-pointer active:scale-95 transition-transform"
           >
-            {isHalfDay ? <ToggleRight size={32} className="text-emerald-500" /> : <ToggleLeft size={32} className="text-neutral-300" />}
+            {isHalfDay ? <ToggleRight size={32} className="text-emerald-400" /> : <ToggleLeft size={32} className="text-slate-500" />}
           </button>
         </div>
       ) : (
         /* Options before Time Out */
-        <div className="flex items-center justify-between bg-emerald-50/60 p-3 rounded-2xl border border-emerald-200/60">
+        <div className="flex items-center justify-between bg-emerald-950/40 p-3 rounded-2xl border border-emerald-500/30">
           <div>
-            <span className="font-extrabold text-neutral-800 text-xs flex items-center gap-1">
-              <Moon size={14} className="text-emerald-600" /> Overtime Request (Up to +2.0 hrs)
+            <span className="font-extrabold text-white text-xs flex items-center gap-1">
+              <Moon size={14} className="text-emerald-400" /> Overtime Request (Up to +2.0 hrs)
             </span>
-            <span className="text-[10px] text-neutral-500 font-medium block">Extend shift up to 7:00 PM max (10h max total)</span>
+            <span className="text-[10px] text-slate-400 font-medium block">Extend shift up to 7:00 PM max (10h max total)</span>
           </div>
           <button
             onClick={() => setAllowOvertime(!allowOvertime)}
             disabled={loading}
             className="text-primary cursor-pointer active:scale-95 transition-transform"
           >
-            {allowOvertime ? <ToggleRight size={32} className="text-emerald-500" /> : <ToggleLeft size={32} className="text-neutral-300" />}
+            {allowOvertime ? <ToggleRight size={32} className="text-emerald-400" /> : <ToggleLeft size={32} className="text-slate-500" />}
           </button>
         </div>
       )}
@@ -111,7 +111,7 @@ export default function OjtTimeControls({ todayRecord, isCurrentlyTimedIn, onTim
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
           placeholder="Optional activity / task notes for today..."
-          className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-neutral-800 focus:ring-2 focus:ring-primary/20 outline-none"
+          className="w-full px-3.5 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-xs font-semibold text-white placeholder-slate-500 focus:ring-2 focus:ring-primary/40 outline-none"
         />
       </div>
 
