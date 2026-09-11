@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { GraduationCap, Mail, Phone, MapPin, Lock, Eye, EyeOff, Clock, ArrowLeft } from 'lucide-react';
+import { Mail, Phone, MapPin, Lock, Eye, EyeOff, Clock, ArrowLeft } from 'lucide-react';
 import { OjtService } from '@/services/ojt/ojtService';
 import { useAuthStore } from '@/stores/useAuthStore';
 
@@ -46,7 +46,6 @@ export default function OjtRegister() {
     setError(null);
 
     try {
-      // Check if email is already registered
       const existingStudents = await OjtService.getAllStudents();
       const emailTaken = existingStudents.some(
         (s) => s.email.toLowerCase() === email.trim().toLowerCase()
@@ -71,7 +70,6 @@ export default function OjtRegister() {
         passwordHash: password.trim(),
       });
 
-      // Auto login student
       login(
         {
           id: student.id,
@@ -92,45 +90,53 @@ export default function OjtRegister() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-900 flex flex-col items-center justify-center p-2 sm:p-4">
-      {/* Compact Card Fits on Mobile Screens without Scroll */}
-      <div className="w-full max-w-sm bg-white rounded-3xl p-4 sm:p-5 shadow-2xl space-y-3">
+    <div 
+      className="relative min-h-screen w-full bg-[#0f172a] flex flex-col items-center justify-center p-3 sm:p-5 overflow-hidden"
+      style={{ fontFamily: "'Century Gothic', CenturyGothic, AppleGothic, sans-serif" }}
+    >
+      {/* Grid Pattern Background */}
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff33_1px,transparent_1px),linear-gradient(to_bottom,#ffffff33_1px,transparent_1px)] bg-[size:6rem_4rem] pointer-events-none" />
+
+      {/* Optimized Card for Mobile Screens */}
+      <div className="relative z-10 w-full max-w-sm bg-white rounded-3xl p-5 sm:p-6 shadow-2xl space-y-3.5">
         <div className="flex items-center justify-between">
           <Link
             to="/ojt/login"
-            className="flex items-center gap-1 text-[11px] font-extrabold text-neutral-500 hover:text-neutral-900 transition-colors"
+            className="flex items-center gap-1 text-xs font-black text-neutral-500 hover:text-neutral-900 transition-colors"
           >
-            <ArrowLeft size={14} /> Back to Sign In
+            <ArrowLeft size={15} /> Back to Sign In
           </Link>
-          <span className="bg-primary/10 text-primary px-2.5 py-0.5 rounded-full text-[10px] font-black border border-primary/20">
+          <span className="bg-primary/10 text-primary px-3 py-0.5 rounded-full text-xs font-black border border-primary/20">
             Registration
           </span>
         </div>
 
         <div className="text-center">
-          <div className="w-10 h-10 bg-gradient-to-tr from-primary to-orange-400 text-white rounded-xl flex items-center justify-center mx-auto mb-1 shadow-md">
-            <GraduationCap size={22} />
-          </div>
-          <h1 className="text-lg font-black text-neutral-900 leading-tight">
+          <img
+            src="/CSiLogo.png"
+            alt="Converge IT Solutions Inc."
+            className="h-10 object-contain mx-auto mb-2"
+          />
+          <h1 className="text-xl font-black text-neutral-900 leading-tight">
             Register OJT Account
           </h1>
-          <p className="text-[10px] text-neutral-500 font-semibold mt-0.5">
+          <p className="text-xs text-neutral-500 font-semibold mt-0.5">
             Fill in your details to create your OJT portal
           </p>
         </div>
 
         {error && (
-          <p className="text-[11px] font-extrabold text-red-600 bg-red-50 py-1.5 px-2.5 rounded-lg border border-red-200 text-center">
+          <p className="text-xs font-extrabold text-red-600 bg-red-50 py-2 px-3 rounded-xl border border-red-200 text-center">
             {error}
           </p>
         )}
 
         {/* Form */}
-        <form onSubmit={handleRegister} className="space-y-2 text-[11px] font-semibold">
+        <form onSubmit={handleRegister} className="space-y-2.5 text-xs font-semibold">
           {/* First Name & Last Name */}
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-2 gap-2.5">
             <div>
-              <label className="block text-[9px] font-extrabold text-neutral-500 uppercase tracking-wider mb-0.5">
+              <label className="block text-[10px] font-black text-neutral-600 uppercase tracking-wider mb-1">
                 First Name *
               </label>
               <input
@@ -139,11 +145,11 @@ export default function OjtRegister() {
                 value={firstName}
                 onChange={(e) => setFirstName(e.target.value)}
                 placeholder="First name"
-                className="w-full px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-neutral-800 focus:ring-2 focus:ring-primary/20 outline-none text-xs"
+                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-neutral-800 focus:ring-2 focus:ring-primary/20 outline-none text-xs font-bold"
               />
             </div>
             <div>
-              <label className="block text-[9px] font-extrabold text-neutral-500 uppercase tracking-wider mb-0.5">
+              <label className="block text-[10px] font-black text-neutral-600 uppercase tracking-wider mb-1">
                 Last Name *
               </label>
               <input
@@ -152,16 +158,16 @@ export default function OjtRegister() {
                 value={lastName}
                 onChange={(e) => setLastName(e.target.value)}
                 placeholder="Last name"
-                className="w-full px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-neutral-800 focus:ring-2 focus:ring-primary/20 outline-none text-xs"
+                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-neutral-800 focus:ring-2 focus:ring-primary/20 outline-none text-xs font-bold"
               />
             </div>
           </div>
 
           {/* Email & Phone */}
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-2 gap-2.5">
             <div>
-              <label className="block text-[9px] font-extrabold text-neutral-500 uppercase tracking-wider mb-0.5 flex items-center gap-0.5">
-                <Mail size={10} className="text-primary" /> Email *
+              <label className="block text-[10px] font-black text-neutral-600 uppercase tracking-wider mb-1 flex items-center gap-1">
+                <Mail size={11} className="text-primary" /> Email *
               </label>
               <input
                 type="email"
@@ -169,28 +175,28 @@ export default function OjtRegister() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="student@school.edu"
-                className="w-full px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-neutral-800 focus:ring-2 focus:ring-primary/20 outline-none text-xs"
+                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-neutral-800 focus:ring-2 focus:ring-primary/20 outline-none text-xs font-bold"
               />
             </div>
             <div>
-              <label className="block text-[9px] font-extrabold text-neutral-500 uppercase tracking-wider mb-0.5 flex items-center gap-0.5">
-                <Phone size={10} /> Contact No.
+              <label className="block text-[10px] font-black text-neutral-600 uppercase tracking-wider mb-1 flex items-center gap-1">
+                <Phone size={11} /> Contact No.
               </label>
               <input
                 type="text"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 placeholder="09171234567"
-                className="w-full px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-neutral-800 focus:ring-2 focus:ring-primary/20 outline-none text-xs"
+                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-neutral-800 focus:ring-2 focus:ring-primary/20 outline-none text-xs font-bold"
               />
             </div>
           </div>
 
           {/* School & Address */}
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-2 gap-2.5">
             <div>
-              <label className="block text-[9px] font-extrabold text-neutral-500 uppercase tracking-wider mb-0.5 flex items-center gap-0.5">
-                <GraduationCap size={10} /> School *
+              <label className="block text-[10px] font-black text-neutral-600 uppercase tracking-wider mb-1 flex items-center gap-1">
+                School *
               </label>
               <input
                 type="text"
@@ -198,28 +204,28 @@ export default function OjtRegister() {
                 value={school}
                 onChange={(e) => setSchool(e.target.value)}
                 placeholder="University"
-                className="w-full px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-neutral-800 focus:ring-2 focus:ring-primary/20 outline-none text-xs"
+                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-neutral-800 focus:ring-2 focus:ring-primary/20 outline-none text-xs font-bold"
               />
             </div>
             <div>
-              <label className="block text-[9px] font-extrabold text-neutral-500 uppercase tracking-wider mb-0.5 flex items-center gap-0.5">
-                <MapPin size={10} /> Address
+              <label className="block text-[10px] font-black text-neutral-600 uppercase tracking-wider mb-1 flex items-center gap-1">
+                <MapPin size={11} /> Address
               </label>
               <input
                 type="text"
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
                 placeholder="City, Province"
-                className="w-full px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-neutral-800 focus:ring-2 focus:ring-primary/20 outline-none text-xs"
+                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-neutral-800 focus:ring-2 focus:ring-primary/20 outline-none text-xs font-bold"
               />
             </div>
           </div>
 
           {/* Required Hours Settings */}
-          <div className="grid grid-cols-2 gap-2 bg-slate-50 p-2 rounded-xl border border-slate-200/80">
+          <div className="grid grid-cols-2 gap-2.5 bg-slate-50 p-2.5 rounded-2xl border border-slate-200/80">
             <div>
-              <label className="block text-[9px] font-extrabold text-neutral-600 uppercase tracking-wider mb-0.5 flex items-center gap-0.5">
-                <Clock size={10} className="text-primary" /> Total Hours *
+              <label className="block text-[10px] font-black text-neutral-600 uppercase tracking-wider mb-1 flex items-center gap-1">
+                <Clock size={11} className="text-primary" /> Total Hours *
               </label>
               <input
                 type="number"
@@ -228,11 +234,11 @@ export default function OjtRegister() {
                 required
                 value={requiredHours}
                 onChange={(e) => setRequiredHours(Number(e.target.value))}
-                className="w-full px-2 py-1 bg-white border border-slate-300 rounded-lg text-neutral-800 font-extrabold focus:ring-2 focus:ring-primary/20 outline-none text-xs"
+                className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-xl text-neutral-800 font-extrabold focus:ring-2 focus:ring-primary/20 outline-none text-xs"
               />
             </div>
             <div>
-              <label className="block text-[9px] font-extrabold text-neutral-600 uppercase tracking-wider mb-0.5">
+              <label className="block text-[10px] font-black text-neutral-600 uppercase tracking-wider mb-1">
                 Daily Hours
               </label>
               <input
@@ -242,16 +248,16 @@ export default function OjtRegister() {
                 required
                 value={requiredHoursPerDay}
                 onChange={(e) => setRequiredHoursPerDay(Number(e.target.value))}
-                className="w-full px-2 py-1 bg-white border border-slate-300 rounded-lg text-neutral-800 font-extrabold focus:ring-2 focus:ring-primary/20 outline-none text-xs"
+                className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-xl text-neutral-800 font-extrabold focus:ring-2 focus:ring-primary/20 outline-none text-xs"
               />
             </div>
           </div>
 
           {/* Password & Confirm Password */}
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-2 gap-2.5">
             <div>
-              <label className="block text-[9px] font-extrabold text-neutral-500 uppercase tracking-wider mb-0.5 flex items-center gap-0.5">
-                <Lock size={10} className="text-primary" /> Password *
+              <label className="block text-[10px] font-black text-neutral-600 uppercase tracking-wider mb-1 flex items-center gap-1">
+                <Lock size={11} className="text-primary" /> Password *
               </label>
               <div className="relative">
                 <input
@@ -260,19 +266,19 @@ export default function OjtRegister() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Password"
-                  className="w-full px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-neutral-800 focus:ring-2 focus:ring-primary/20 outline-none pr-7 text-xs font-bold"
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-neutral-800 focus:ring-2 focus:ring-primary/20 outline-none pr-8 text-xs font-bold"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-700"
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-700"
                 >
-                  {showPassword ? <EyeOff size={13} /> : <Eye size={13} />}
+                  {showPassword ? <EyeOff size={14} /> : <Eye size={14} />}
                 </button>
               </div>
             </div>
             <div>
-              <label className="block text-[9px] font-extrabold text-neutral-500 uppercase tracking-wider mb-0.5">
+              <label className="block text-[10px] font-black text-neutral-600 uppercase tracking-wider mb-1">
                 Confirm *
               </label>
               <div className="relative">
@@ -282,14 +288,14 @@ export default function OjtRegister() {
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="Confirm"
-                  className="w-full px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-neutral-800 focus:ring-2 focus:ring-primary/20 outline-none pr-7 text-xs font-bold"
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-neutral-800 focus:ring-2 focus:ring-primary/20 outline-none pr-8 text-xs font-bold"
                 />
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-700"
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-700"
                 >
-                  {showConfirmPassword ? <EyeOff size={13} /> : <Eye size={13} />}
+                  {showConfirmPassword ? <EyeOff size={14} /> : <Eye size={14} />}
                 </button>
               </div>
             </div>
@@ -298,13 +304,13 @@ export default function OjtRegister() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-2.5 bg-gradient-to-r from-primary via-orange-500 to-primary-dark text-white rounded-xl font-black text-xs shadow-md hover:shadow-lg transition-all cursor-pointer disabled:opacity-50 active:scale-[0.98] mt-1"
+            className="w-full py-3 bg-gradient-to-r from-primary via-orange-500 to-primary-dark text-white rounded-xl font-black text-xs shadow-md hover:shadow-lg transition-all cursor-pointer disabled:opacity-50 active:scale-[0.98] mt-1.5"
           >
             {loading ? 'Creating Account...' : 'Complete Registration'}
           </button>
         </form>
 
-        <p className="text-center text-[10px] text-neutral-500 font-semibold pt-0.5">
+        <p className="text-center text-xs text-neutral-500 font-semibold pt-1">
           Already registered?{' '}
           <Link to="/ojt/login" className="text-primary font-extrabold hover:underline">
             Sign In

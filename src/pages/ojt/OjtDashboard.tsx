@@ -84,7 +84,10 @@ export default function OjtDashboard() {
   };
 
   return (
-    <div className="flex flex-col flex-1 bg-slate-50 min-h-screen pb-12 relative">
+    <div 
+      className="flex flex-col flex-1 bg-slate-50 min-h-screen pb-12 relative"
+      style={{ fontFamily: "'Century Gothic', CenturyGothic, AppleGothic, sans-serif" }}
+    >
       {/* In-App Browser Detector Banner */}
       <SocialBrowserBanner />
 

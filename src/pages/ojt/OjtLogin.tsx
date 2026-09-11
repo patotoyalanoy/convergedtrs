@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { GraduationCap, Mail, Lock, Eye, EyeOff, ArrowLeft } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff, ArrowLeft } from 'lucide-react';
 import { OjtService } from '@/services/ojt/ojtService';
 import { useAuthStore } from '@/stores/useAuthStore';
 
@@ -55,13 +55,19 @@ export default function OjtLogin() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-900 flex flex-col items-center justify-center p-3 sm:p-4">
-      {/* Compact Card Fits on Mobile Screens without Scroll */}
-      <div className="w-full max-w-sm bg-white rounded-3xl p-5 sm:p-6 shadow-2xl space-y-4">
+    <div 
+      className="relative min-h-screen w-full bg-[#0f172a] flex flex-col items-center justify-center p-3 sm:p-5 overflow-hidden"
+      style={{ fontFamily: "'Century Gothic', CenturyGothic, AppleGothic, sans-serif" }}
+    >
+      {/* Grid Pattern Background */}
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff33_1px,transparent_1px),linear-gradient(to_bottom,#ffffff33_1px,transparent_1px)] bg-[size:6rem_4rem] pointer-events-none" />
+
+      {/* Compact Card Fits Mobile Screens without Scroll */}
+      <div className="relative z-10 w-full max-w-sm bg-white rounded-3xl p-5 sm:p-6 shadow-2xl space-y-4">
         <div className="flex items-center justify-between">
           <Link
             to="/login"
-            className="flex items-center gap-1 text-[11px] font-extrabold text-neutral-500 hover:text-neutral-900 transition-colors"
+            className="flex items-center gap-1 text-xs font-black text-neutral-500 hover:text-neutral-900 transition-colors"
           >
             <ArrowLeft size={14} /> Regular Login
           </Link>
@@ -71,14 +77,16 @@ export default function OjtLogin() {
         </div>
 
         <div className="text-center">
-          <div className="w-12 h-12 bg-gradient-to-tr from-primary to-orange-400 text-white rounded-2xl flex items-center justify-center mx-auto mb-2 shadow-md">
-            <GraduationCap size={26} />
-          </div>
+          <img
+            src="/CSiLogo.png"
+            alt="Converge IT Solutions Inc."
+            className="h-10 object-contain mx-auto mb-2"
+          />
           <h1 className="text-xl font-black text-neutral-900 leading-tight">
             OJT Student Portal
           </h1>
-          <p className="text-[11px] text-neutral-500 font-semibold mt-0.5">
-            Sign in with your Email & Password to track OJT hours
+          <p className="text-xs text-neutral-500 font-semibold mt-0.5">
+            Sign in with your Email &amp; Password to track OJT hours
           </p>
         </div>
 
@@ -91,7 +99,7 @@ export default function OjtLogin() {
         {/* Email & Password Form */}
         <form onSubmit={handleSubmit} className="space-y-3 text-xs font-semibold">
           <div>
-            <label className="block text-[10px] font-extrabold text-neutral-500 uppercase tracking-wider mb-1 flex items-center gap-1">
+            <label className="block text-[10px] font-black text-neutral-500 uppercase tracking-wider mb-1 flex items-center gap-1">
               <Mail size={12} className="text-primary" /> Email Address
             </label>
             <input
@@ -100,12 +108,12 @@ export default function OjtLogin() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="student@school.edu.ph"
-              className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-neutral-800 focus:ring-2 focus:ring-primary/20 outline-none"
+              className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-neutral-800 focus:ring-2 focus:ring-primary/20 outline-none text-xs font-bold"
             />
           </div>
 
           <div>
-            <label className="block text-[10px] font-extrabold text-neutral-500 uppercase tracking-wider mb-1 flex items-center gap-1">
+            <label className="block text-[10px] font-black text-neutral-500 uppercase tracking-wider mb-1 flex items-center gap-1">
               <Lock size={12} className="text-primary" /> Password
             </label>
             <div className="relative">
@@ -115,7 +123,7 @@ export default function OjtLogin() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Enter your password"
-                className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-neutral-800 focus:ring-2 focus:ring-primary/20 outline-none pr-10 font-bold"
+                className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-neutral-800 focus:ring-2 focus:ring-primary/20 outline-none pr-10 text-xs font-bold"
               />
               <button
                 type="button"
@@ -136,7 +144,7 @@ export default function OjtLogin() {
           </button>
         </form>
 
-        <p className="text-center text-[11px] text-neutral-500 font-semibold pt-1">
+        <p className="text-center text-xs text-neutral-500 font-semibold pt-1">
           Don't have an account?{' '}
           <Link to="/ojt/register" className="text-primary font-extrabold hover:underline">
             Register Account
