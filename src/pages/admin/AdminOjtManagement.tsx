@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { 
-  GraduationCap, Search, Filter, Plus, Edit3, Trash2, Clock, 
-  CheckCircle2, AlertCircle, Download, RefreshCw, Calendar, UserCheck, ShieldCheck, Mail, Phone, MapPin
+  GraduationCap, Search, Plus, Edit3, Trash2, 
+  CheckCircle2, AlertTriangle, Download, RefreshCw, Calendar, X
 } from 'lucide-react';
 import { OjtStudent, OjtAttendanceRecord } from '@/types/ojt';
 import { OjtService } from '@/services/ojt/ojtService';
@@ -21,6 +21,8 @@ export default function AdminOjtManagement() {
   const [showModal, setShowModal] = useState(false);
   const [editingStudent, setEditingStudent] = useState<OjtStudent | null>(null);
   const [selectedStudentLogs, setSelectedStudentLogs] = useState<{ student: OjtStudent; logs: OjtAttendanceRecord[] } | null>(null);
+  const [deleteConfirmStudent, setDeleteConfirmStudent] = useState<OjtStudent | null>(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   const loadData = async () => {
     setLoading(true);
@@ -58,10 +60,21 @@ export default function AdminOjtManagement() {
     loadData();
   }, []);
 
-  const handleDelete = async (id: string, name: string) => {
-    if (confirm(`Are you sure you want to delete OJT Student record for "${name}"?`)) {
-      await OjtService.deleteStudent(id);
+  const handleDelete = (student: OjtStudent) => {
+    setDeleteConfirmStudent(student);
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteConfirmStudent) return;
+    setDeleteLoading(true);
+    try {
+      await OjtService.deleteStudent(deleteConfirmStudent.id);
+      setDeleteConfirmStudent(null);
       loadData();
+    } catch (err) {
+      console.error('Failed to delete student:', err);
+    } finally {
+      setDeleteLoading(false);
     }
   };
 
@@ -307,7 +320,7 @@ export default function AdminOjtManagement() {
                             <Edit3 size={14} />
                           </button>
                           <button
-                            onClick={() => handleDelete(st.id, st.name)}
+                            onClick={() => handleDelete(st)}
                             className="p-1.5 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg transition-colors cursor-pointer"
                             title="Delete Record"
                           >
@@ -338,7 +351,7 @@ export default function AdminOjtManagement() {
 
       {/* View Student Logs Modal */}
       {selectedStudentLogs && (
-        <div className="fixed inset-0 z-[200] bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-[200] bg-black/60 flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl p-6 w-full max-w-2xl shadow-2xl border border-neutral-200 space-y-4 max-h-[85vh] overflow-y-auto">
             <div className="flex justify-between items-center pb-2 border-b border-slate-100">
               <div>
@@ -379,6 +392,50 @@ export default function AdminOjtManagement() {
                   </div>
                 ))
               )}
+            </div>
+          </div>
+        </div>
+      )}
+      {/* ── Custom Delete Confirmation Modal ── */}
+      {deleteConfirmStudent && (
+        <div className="fixed inset-0 z-[300] bg-black/60 flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl p-6 w-full max-w-sm shadow-2xl border border-neutral-200 text-center space-y-4">
+            <div className="w-14 h-14 bg-red-50 text-red-500 rounded-2xl flex items-center justify-center mx-auto shadow-inner border border-red-100">
+              <AlertTriangle size={28} />
+            </div>
+            <div>
+              <h3 className="font-black text-lg text-neutral-800">Delete OJT Student?</h3>
+              <p className="text-xs text-neutral-500 font-semibold mt-1">
+                You are about to permanently delete the record for:
+              </p>
+              <p className="text-sm font-black text-neutral-900 mt-1">
+                {deleteConfirmStudent.name}
+              </p>
+              <p className="text-xs text-neutral-400 font-medium mt-0.5">
+                {deleteConfirmStudent.school}
+              </p>
+              <p className="text-xs text-red-500 font-bold mt-2">
+                This action cannot be undone. All attendance logs will also be removed.
+              </p>
+            </div>
+            <div className="flex gap-2.5 pt-1">
+              <button
+                type="button"
+                onClick={() => setDeleteConfirmStudent(null)}
+                disabled={deleteLoading}
+                className="flex-1 py-3 rounded-xl font-bold text-xs bg-slate-100 text-neutral-700 hover:bg-slate-200 transition-all cursor-pointer disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={confirmDelete}
+                disabled={deleteLoading}
+                className="flex-1 py-3 rounded-xl font-bold text-xs bg-red-600 hover:bg-red-700 text-white shadow-md transition-all cursor-pointer disabled:opacity-50 flex items-center justify-center gap-1.5"
+              >
+                <Trash2 size={13} />
+                {deleteLoading ? 'Deleting...' : 'Yes, Delete'}
+              </button>
             </div>
           </div>
         </div>
