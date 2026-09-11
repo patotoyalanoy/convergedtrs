@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { useNavigate } from 'react-router-dom';
-import { GraduationCap, LogOut, User, Sparkles, RefreshCw } from 'lucide-react';
+import { GraduationCap, LogOut, User } from 'lucide-react';
 import OjtProgressCard from '@/components/ojt/OjtProgressCard';
 import OjtTimeControls from '@/components/ojt/OjtTimeControls';
 import OjtHistoryTable from '@/components/ojt/OjtHistoryTable';
@@ -21,6 +21,7 @@ export default function OjtDashboard() {
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
   const [showProfileModal, setShowProfileModal] = useState(false);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
   const loadStudentData = async () => {
     if (!user?.id) return;
@@ -28,7 +29,6 @@ export default function OjtDashboard() {
     try {
       let s = await OjtService.getStudentById(user.id);
 
-      // If missing, try matching by name or fallback creation
       if (!s) {
         const allStudents = await OjtService.getAllStudents();
         s = allStudents.find((st) => st.name.toLowerCase() === user.name.toLowerCase()) || null;
@@ -78,7 +78,7 @@ export default function OjtDashboard() {
     }
   };
 
-  const handleLogout = () => {
+  const confirmLogout = () => {
     logout();
     navigate('/ojt/login');
   };
@@ -92,7 +92,7 @@ export default function OjtDashboard() {
       <SocialBrowserBanner />
 
       {/* PWA Install Prompt Banner */}
-      <PwaInstallBanner />
+      <PwaInstallBanner appName="OJT Converge" />
 
       {/* ── Header Banner ── */}
       <div className="bg-gradient-to-r from-primary via-orange-500 to-amber-600 rounded-b-[36px] p-6 text-white shadow-lg relative overflow-hidden">
@@ -120,7 +120,7 @@ export default function OjtDashboard() {
               <User size={18} />
             </button>
             <button
-              onClick={handleLogout}
+              onClick={() => setShowLogoutConfirm(true)}
               className="p-2.5 rounded-xl bg-white/20 hover:bg-white/30 text-white backdrop-blur-md transition-colors cursor-pointer"
               title="Sign Out"
             >
@@ -165,6 +165,39 @@ export default function OjtDashboard() {
           onClose={() => setShowProfileModal(false)}
           onProfileUpdated={loadStudentData}
         />
+      )}
+
+      {/* Logout Confirmation Modal */}
+      {showLogoutConfirm && (
+        <div className="fixed inset-0 z-[9999] bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl p-6 w-full max-w-sm shadow-2xl border border-neutral-200 text-center space-y-4">
+            <div className="w-14 h-14 bg-red-50 text-red-500 rounded-2xl flex items-center justify-center mx-auto shadow-inner border border-red-100">
+              <LogOut size={28} />
+            </div>
+            <div>
+              <h3 className="font-black text-lg text-neutral-800">Sign Out of OJT Portal?</h3>
+              <p className="text-xs text-neutral-500 font-semibold mt-1">
+                Are you sure you want to log out? You will need your email and password to log back in.
+              </p>
+            </div>
+            <div className="flex gap-2.5 pt-2">
+              <button
+                type="button"
+                onClick={() => setShowLogoutConfirm(false)}
+                className="flex-1 py-3 rounded-xl font-bold text-xs bg-slate-100 text-neutral-700 hover:bg-slate-200 transition-all cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={confirmLogout}
+                className="flex-1 py-3 rounded-xl font-bold text-xs bg-red-600 hover:bg-red-700 text-white shadow-md transition-all cursor-pointer"
+              >
+                Sign Out
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
