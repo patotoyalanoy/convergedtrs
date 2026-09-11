@@ -85,9 +85,12 @@ export default function OjtDashboard() {
 
   return (
     <div 
-      className="flex flex-col flex-1 bg-slate-50 min-h-screen pb-12 relative"
+      className="flex flex-col flex-1 bg-[#0f172a] min-h-screen pb-12 relative overflow-hidden"
       style={{ fontFamily: "'Century Gothic', CenturyGothic, AppleGothic, sans-serif" }}
     >
+      {/* Grid Pattern Background */}
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff33_1px,transparent_1px),linear-gradient(to_bottom,#ffffff33_1px,transparent_1px)] bg-[size:6rem_4rem] pointer-events-none" />
+
       {/* In-App Browser Detector Banner */}
       <SocialBrowserBanner />
 
@@ -95,7 +98,7 @@ export default function OjtDashboard() {
       <PwaInstallBanner appName="OJT Converge" />
 
       {/* ── Header Banner ── */}
-      <div className="bg-gradient-to-r from-primary via-orange-500 to-amber-600 rounded-b-[36px] p-6 text-white shadow-lg relative overflow-hidden">
+      <div className="bg-gradient-to-r from-primary via-orange-500 to-amber-600 rounded-b-[36px] p-6 text-white shadow-lg relative overflow-hidden z-10">
         <div className="flex justify-between items-center mb-4 relative z-10">
           <div className="flex items-center gap-3">
             <img
@@ -141,7 +144,7 @@ export default function OjtDashboard() {
       </div>
 
       {/* ── Main Content Container ── */}
-      <div className="p-4 sm:p-6 space-y-5 max-w-xl mx-auto w-full -mt-3">
+      <div className="relative z-10 p-4 sm:p-6 space-y-5 max-w-xl mx-auto w-full -mt-3">
         {student && (
           <OjtProgressCard
             student={student}
