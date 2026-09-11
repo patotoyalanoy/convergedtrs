@@ -123,7 +123,7 @@ export default function AdminOjtManagement() {
       <div className="bg-gradient-to-r from-primary via-orange-500 to-amber-600 rounded-3xl p-6 text-white shadow-lg flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <span className="text-[10px] font-black uppercase tracking-widest bg-white/20 px-3 py-0.5 rounded-full border border-white/30 backdrop-blur-md">
+            <span className="text-[10px] font-black uppercase tracking-widest bg-white/20 px-3 py-0.5 rounded-full border border-white/30">
               OJT Monitoring Module
             </span>
           </div>
@@ -138,7 +138,7 @@ export default function AdminOjtManagement() {
         <div className="flex items-center gap-2.5">
           <button
             onClick={handleExportCSV}
-            className="bg-white/20 hover:bg-white/30 text-white font-extrabold px-4 py-2.5 rounded-2xl text-xs flex items-center gap-1.5 backdrop-blur-md transition-all active:scale-95 cursor-pointer border border-white/30"
+            className="bg-white/20 hover:bg-white/30 text-white font-extrabold px-4 py-2.5 rounded-2xl text-xs flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer border border-white/30"
           >
             <Download size={15} /> Export CSV
           </button>
@@ -351,8 +351,14 @@ export default function AdminOjtManagement() {
 
       {/* View Student Logs Modal */}
       {selectedStudentLogs && (
-        <div className="fixed inset-0 z-[200] bg-black/60 flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl p-6 w-full max-w-2xl shadow-2xl border border-neutral-200 space-y-4 max-h-[85vh] overflow-y-auto">
+        <div 
+          className="fixed inset-0 z-[200] flex items-center justify-center p-4"
+          onClick={() => setSelectedStudentLogs(null)}
+        >
+          <div 
+            onClick={(e) => e.stopPropagation()}
+            className="bg-white rounded-3xl p-6 w-full max-w-2xl shadow-2xl border border-slate-200 space-y-4 max-h-[85vh] overflow-y-auto"
+          >
             <div className="flex justify-between items-center pb-2 border-b border-slate-100">
               <div>
                 <h3 className="font-extrabold text-base text-neutral-800">
@@ -398,8 +404,14 @@ export default function AdminOjtManagement() {
       )}
       {/* ── Custom Delete Confirmation Modal ── */}
       {deleteConfirmStudent && (
-        <div className="fixed inset-0 z-[300] bg-black/60 flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl p-6 w-full max-w-sm shadow-2xl border border-neutral-200 text-center space-y-4">
+        <div 
+          className="fixed inset-0 z-[300] flex items-center justify-center p-4"
+          onClick={() => setDeleteConfirmStudent(null)}
+        >
+          <div 
+            onClick={(e) => e.stopPropagation()}
+            className="bg-white rounded-3xl p-6 w-full max-w-sm shadow-2xl border border-slate-200 text-center space-y-4"
+          >
             <div className="w-14 h-14 bg-red-50 text-red-500 rounded-2xl flex items-center justify-center mx-auto shadow-inner border border-red-100">
               <AlertTriangle size={28} />
             </div>
