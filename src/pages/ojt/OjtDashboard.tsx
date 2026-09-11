@@ -98,15 +98,13 @@ export default function OjtDashboard() {
       <div className="bg-gradient-to-r from-primary via-orange-500 to-amber-600 rounded-b-[36px] p-6 text-white shadow-lg relative overflow-hidden">
         <div className="flex justify-between items-center mb-4 relative z-10">
           <div className="flex items-center gap-3">
-            <div className="bg-white/95 px-3 py-1.5 rounded-2xl shadow-sm border border-white/40 flex items-center shrink-0">
-              <img
-                src="/CSiLogo.png"
-                alt="Converge IT Solutions Inc."
-                decoding="sync"
-                fetchPriority="high"
-                className="h-8 w-auto object-contain"
-              />
-            </div>
+            <img
+              src="/CSiLogo.png"
+              alt="Converge IT Solutions Inc."
+              decoding="sync"
+              fetchPriority="high"
+              className="h-10 w-auto object-contain shrink-0 drop-shadow-sm"
+            />
             <div>
               <h2 className="font-black text-lg leading-tight">
                 Welcome, {student?.firstName || user?.name?.split(' ')[0] || 'OJT Student'}!
