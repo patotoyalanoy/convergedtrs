@@ -5,15 +5,24 @@ import { WifiOff, RefreshCw } from 'lucide-react';
 import BottomNav from '@/components/layout/BottomNav';
 
 export default function AppLayout() {
-  const { isAuthenticated, role } = useAuthStore();
+  const { isAuthenticated, role, user } = useAuthStore();
   const { isOnline, isSyncing } = useAppStore();
   const location = useLocation();
 
   if (!isAuthenticated) {
+    const preferredPortal = localStorage.getItem('preferred_portal');
+    if (preferredPortal === 'ojt') {
+      return <Navigate to="/ojt/login" replace />;
+    }
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  // Admins trying to access team app → redirect to admin
+  // OJT Students accessing main routes -> redirect to OJT dashboard
+  if ((user as any)?.role === 'OJT Student') {
+    return <Navigate to="/ojt/dashboard" replace />;
+  }
+
+  // Admins trying to access team app -> redirect to admin
   if (role === 'admin') {
     return <Navigate to="/admin" replace />;
   }

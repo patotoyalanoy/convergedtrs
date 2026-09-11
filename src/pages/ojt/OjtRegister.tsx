@@ -1,8 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Mail, Phone, MapPin, Lock, Eye, EyeOff, Clock, ArrowLeft } from 'lucide-react';
 import { OjtService } from '@/services/ojt/ojtService';
 import { useAuthStore } from '@/stores/useAuthStore';
+import PwaInstallBanner from '@/components/common/PwaInstallBanner';
+import SocialBrowserBanner from '@/components/common/SocialBrowserBanner';
 
 export default function OjtRegister() {
   const navigate = useNavigate();
@@ -23,6 +25,11 @@ export default function OjtRegister() {
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Set OJT as the preferred portal so PWA opens to OJT login
+  useEffect(() => {
+    localStorage.setItem('preferred_portal', 'ojt');
+  }, []);
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -70,6 +77,8 @@ export default function OjtRegister() {
         passwordHash: password.trim(),
       });
 
+      localStorage.setItem('preferred_portal', 'ojt');
+
       login(
         {
           id: student.id,
@@ -94,6 +103,10 @@ export default function OjtRegister() {
       className="relative min-h-screen w-full bg-[#0f172a] flex flex-col items-center justify-center p-3 sm:p-5 overflow-hidden"
       style={{ fontFamily: "'Century Gothic', CenturyGothic, AppleGothic, sans-serif" }}
     >
+      {/* Social Browser & PWA Install Banners */}
+      <SocialBrowserBanner />
+      <PwaInstallBanner />
+
       {/* Grid Pattern Background */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff33_1px,transparent_1px),linear-gradient(to_bottom,#ffffff33_1px,transparent_1px)] bg-[size:6rem_4rem] pointer-events-none" />
 

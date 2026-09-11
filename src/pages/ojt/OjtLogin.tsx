@@ -1,8 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Mail, Lock, Eye, EyeOff, ArrowLeft } from 'lucide-react';
 import { OjtService } from '@/services/ojt/ojtService';
 import { useAuthStore } from '@/stores/useAuthStore';
+import PwaInstallBanner from '@/components/common/PwaInstallBanner';
+import SocialBrowserBanner from '@/components/common/SocialBrowserBanner';
 
 export default function OjtLogin() {
   const navigate = useNavigate();
@@ -13,6 +15,11 @@ export default function OjtLogin() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  // Set OJT as the preferred portal so PWA opens to OJT login
+  useEffect(() => {
+    localStorage.setItem('preferred_portal', 'ojt');
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,6 +40,7 @@ export default function OjtLogin() {
       );
 
       if (match) {
+        localStorage.setItem('preferred_portal', 'ojt');
         login(
           {
             id: match.id,
@@ -59,6 +67,10 @@ export default function OjtLogin() {
       className="relative min-h-screen w-full bg-[#0f172a] flex flex-col items-center justify-center p-3 sm:p-5 overflow-hidden"
       style={{ fontFamily: "'Century Gothic', CenturyGothic, AppleGothic, sans-serif" }}
     >
+      {/* Social Browser & PWA Install Banners */}
+      <SocialBrowserBanner />
+      <PwaInstallBanner />
+
       {/* Grid Pattern Background */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff33_1px,transparent_1px),linear-gradient(to_bottom,#ffffff33_1px,transparent_1px)] bg-[size:6rem_4rem] pointer-events-none" />
 
@@ -67,6 +79,7 @@ export default function OjtLogin() {
         <div className="flex items-center justify-between">
           <Link
             to="/login"
+            onClick={() => localStorage.setItem('preferred_portal', 'regular')}
             className="flex items-center gap-1 text-xs font-black text-neutral-500 hover:text-neutral-900 transition-colors"
           >
             <ArrowLeft size={14} /> Regular Login
