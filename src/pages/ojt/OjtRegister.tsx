@@ -44,6 +44,16 @@ export default function OjtRegister() {
     setError(null);
 
     try {
+      // Check if PIN is already taken by another student
+      const existingStudents = await OjtService.getAllStudents();
+      const pinTaken = existingStudents.some((s) => s.pinHash === pin.trim());
+
+      if (pinTaken) {
+        setError('This 4-digit PIN is already taken by another student. Please choose a unique PIN.');
+        setLoading(false);
+        return;
+      }
+
       const student = await OjtService.registerStudent({
         firstName: firstName.trim(),
         lastName: lastName.trim(),

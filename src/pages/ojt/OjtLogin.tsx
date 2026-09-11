@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { GraduationCap, Lock, Delete, ArrowLeft } from 'lucide-react';
 import { OjtService } from '@/services/ojt/ojtService';
@@ -9,8 +9,22 @@ export default function OjtLogin() {
   const { login } = useAuthStore();
 
   const [pin, setPin] = useState('');
+  const [selectedStudentId, setSelectedStudentId] = useState<string>('all');
+  const [studentsList, setStudentsList] = useState<any[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    async function loadStudents() {
+      try {
+        const list = await OjtService.getAllStudents();
+        setStudentsList(list);
+      } catch (e) {
+        console.warn('Could not load student list for login:', e);
+      }
+    }
+    loadStudents();
+  }, []);
 
   const handleDigit = (d: string) => {
     if (loading || pin.length >= 4) return;
@@ -35,7 +49,16 @@ export default function OjtLogin() {
 
     try {
       const students = await OjtService.getAllStudents();
-      const match = students.find((s) => s.pinHash === pin || s.pinHash === String(pin));
+      let match = null;
+
+      if (selectedStudentId !== 'all') {
+        const candidate = students.find((s) => s.id === selectedStudentId);
+        if (candidate && (candidate.pinHash === pin || candidate.pinHash === String(pin))) {
+          match = candidate;
+        }
+      } else {
+        match = students.find((s) => s.pinHash === pin || s.pinHash === String(pin));
+      }
 
       if (match) {
         login(
@@ -50,7 +73,7 @@ export default function OjtLogin() {
         );
         navigate('/ojt/dashboard');
       } else {
-        setError('Invalid PIN code. No matching OJT student record found.');
+        setError('Invalid PIN code. Please check your PIN or select your name above.');
         setPin('');
       }
     } catch (err: any) {
@@ -86,6 +109,27 @@ export default function OjtLogin() {
             Enter your 4-digit PIN code to log attendance & track hours
           </p>
         </div>
+
+        {/* Optional Student Selector for Shared Devices */}
+        {studentsList.length > 0 && (
+          <div className="text-left">
+            <label className="block text-[10px] font-extrabold text-neutral-400 uppercase tracking-wider mb-1">
+              Select Your Name (Optional):
+            </label>
+            <select
+              value={selectedStudentId}
+              onChange={(e) => setSelectedStudentId(e.target.value)}
+              className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-neutral-800 focus:ring-2 focus:ring-primary/20 outline-none cursor-pointer"
+            >
+              <option value="all">Auto-Detect by PIN</option>
+              {studentsList.map((st) => (
+                <option key={st.id} value={st.id}>
+                  {st.name} ({st.school})
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
 
         {/* PIN Dots */}
         <div className="flex justify-center gap-3 my-4">
