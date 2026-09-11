@@ -22,7 +22,7 @@ export interface OjtStudent {
   requiredHoursPerDay: number; // default: 8
   completedHours: number; // calculated sum of all completed regular + OT hours
   remainingHours: number; // max(0, requiredHours - completedHours)
-  pinHash: string; // 4-digit PIN
+  passwordHash: string; // Secure Password
   status: 'active' | 'completed' | 'inactive';
   createdAt: string;
   updatedAt?: string;

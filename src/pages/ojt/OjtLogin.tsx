@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { GraduationCap, Lock, Delete, ArrowLeft } from 'lucide-react';
+import { GraduationCap, Mail, Lock, Eye, EyeOff, ArrowLeft } from 'lucide-react';
 import { OjtService } from '@/services/ojt/ojtService';
 import { useAuthStore } from '@/stores/useAuthStore';
 
@@ -8,39 +8,16 @@ export default function OjtLogin() {
   const navigate = useNavigate();
   const { login } = useAuthStore();
 
-  const [pin, setPin] = useState('');
-  const [selectedStudentId, setSelectedStudentId] = useState<string>('all');
-  const [studentsList, setStudentsList] = useState<any[]>([]);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    async function loadStudents() {
-      try {
-        const list = await OjtService.getAllStudents();
-        setStudentsList(list);
-      } catch (e) {
-        console.warn('Could not load student list for login:', e);
-      }
-    }
-    loadStudents();
-  }, []);
-
-  const handleDigit = (d: string) => {
-    if (loading || pin.length >= 4) return;
-    setPin((p) => p + d);
-    setError(null);
-  };
-
-  const handleDelete = () => {
-    if (loading) return;
-    setPin((p) => p.slice(0, -1));
-    setError(null);
-  };
-
-  const handleSubmit = async () => {
-    if (pin.length !== 4) {
-      setError('Please enter a 4-digit PIN');
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email.trim() || !password.trim()) {
+      setError('Please enter your Email and Password');
       return;
     }
 
@@ -49,16 +26,11 @@ export default function OjtLogin() {
 
     try {
       const students = await OjtService.getAllStudents();
-      let match = null;
-
-      if (selectedStudentId !== 'all') {
-        const candidate = students.find((s) => s.id === selectedStudentId);
-        if (candidate && (candidate.pinHash === pin || candidate.pinHash === String(pin))) {
-          match = candidate;
-        }
-      } else {
-        match = students.find((s) => s.pinHash === pin || s.pinHash === String(pin));
-      }
+      const match = students.find(
+        (s) =>
+          s.email.toLowerCase() === email.trim().toLowerCase() &&
+          (s.passwordHash === password.trim() || s.passwordHash === String(password.trim()))
+      );
 
       if (match) {
         login(
@@ -73,8 +45,7 @@ export default function OjtLogin() {
         );
         navigate('/ojt/dashboard');
       } else {
-        setError('Invalid PIN code. Please check your PIN or select your name above.');
-        setPin('');
+        setError('Invalid Email or Password. Please check your credentials.');
       }
     } catch (err: any) {
       setError(err.message || 'Login failed');
@@ -84,113 +55,89 @@ export default function OjtLogin() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-900 flex flex-col items-center justify-center p-4">
-      <div className="w-full max-w-sm bg-white rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6 text-center">
+    <div className="min-h-screen bg-slate-900 flex flex-col items-center justify-center p-3 sm:p-4">
+      {/* Compact Card Fits on Mobile Screens without Scroll */}
+      <div className="w-full max-w-sm bg-white rounded-3xl p-5 sm:p-6 shadow-2xl space-y-4">
         <div className="flex items-center justify-between">
           <Link
             to="/login"
-            className="flex items-center gap-1 text-xs font-bold text-neutral-500 hover:text-neutral-900 transition-colors"
+            className="flex items-center gap-1 text-[11px] font-extrabold text-neutral-500 hover:text-neutral-900 transition-colors"
           >
-            <ArrowLeft size={16} /> Regular Login
+            <ArrowLeft size={14} /> Regular Login
           </Link>
-          <span className="bg-primary/10 text-primary px-3 py-1 rounded-full text-xs font-extrabold border border-primary/20">
+          <span className="bg-primary/10 text-primary px-2.5 py-0.5 rounded-full text-[10px] font-black border border-primary/20">
             OJT Student
           </span>
         </div>
 
-        <div>
-          <div className="w-16 h-16 bg-gradient-to-tr from-primary to-orange-400 text-white rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-lg">
-            <GraduationCap size={32} />
+        <div className="text-center">
+          <div className="w-12 h-12 bg-gradient-to-tr from-primary to-orange-400 text-white rounded-2xl flex items-center justify-center mx-auto mb-2 shadow-md">
+            <GraduationCap size={26} />
           </div>
-          <h1 className="text-2xl font-black text-neutral-900 leading-tight">
+          <h1 className="text-xl font-black text-neutral-900 leading-tight">
             OJT Student Portal
           </h1>
-          <p className="text-xs text-neutral-500 font-semibold mt-1">
-            Enter your 4-digit PIN code to log attendance & track hours
+          <p className="text-[11px] text-neutral-500 font-semibold mt-0.5">
+            Sign in with your Email & Password to track OJT hours
           </p>
         </div>
 
-        {/* Optional Student Selector for Shared Devices */}
-        {studentsList.length > 0 && (
-          <div className="text-left">
-            <label className="block text-[10px] font-extrabold text-neutral-400 uppercase tracking-wider mb-1">
-              Select Your Name (Optional):
-            </label>
-            <select
-              value={selectedStudentId}
-              onChange={(e) => setSelectedStudentId(e.target.value)}
-              className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-neutral-800 focus:ring-2 focus:ring-primary/20 outline-none cursor-pointer"
-            >
-              <option value="all">Auto-Detect by PIN</option>
-              {studentsList.map((st) => (
-                <option key={st.id} value={st.id}>
-                  {st.name} ({st.school})
-                </option>
-              ))}
-            </select>
-          </div>
-        )}
-
-        {/* PIN Dots */}
-        <div className="flex justify-center gap-3 my-4">
-          {[0, 1, 2, 3].map((idx) => (
-            <div
-              key={idx}
-              className={`w-4 h-4 rounded-full border-2 transition-all ${
-                pin.length > idx
-                  ? 'bg-primary border-primary scale-110 shadow-md shadow-primary/30'
-                  : 'border-slate-300 bg-slate-50'
-              }`}
-            />
-          ))}
-        </div>
-
         {error && (
-          <p className="text-xs font-extrabold text-red-500 bg-red-50 py-2 rounded-xl border border-red-200">
+          <p className="text-xs font-extrabold text-red-600 bg-red-50 py-2 px-3 rounded-xl border border-red-200 text-center">
             {error}
           </p>
         )}
 
-        {/* Numeric Keypad */}
-        <div className="grid grid-cols-3 gap-3 max-w-[260px] mx-auto">
-          {['1', '2', '3', '4', '5', '6', '7', '8', '9'].map((digit) => (
-            <button
-              key={digit}
-              type="button"
-              onClick={() => handleDigit(digit)}
-              className="h-14 rounded-2xl bg-slate-50 hover:bg-slate-100 active:bg-slate-200 text-slate-800 font-black text-xl shadow-xs border border-slate-200 transition-all cursor-pointer"
-            >
-              {digit}
-            </button>
-          ))}
-          <div />
-          <button
-            type="button"
-            onClick={() => handleDigit('0')}
-            className="h-14 rounded-2xl bg-slate-50 hover:bg-slate-100 active:bg-slate-200 text-slate-800 font-black text-xl shadow-xs border border-slate-200 transition-all cursor-pointer"
-          >
-            0
-          </button>
-          <button
-            type="button"
-            onClick={handleDelete}
-            className="h-14 rounded-2xl bg-red-50 hover:bg-red-100 text-red-600 font-black flex items-center justify-center shadow-xs border border-red-200 transition-all cursor-pointer"
-            title="Delete"
-          >
-            <Delete size={22} />
-          </button>
-        </div>
+        {/* Email & Password Form */}
+        <form onSubmit={handleSubmit} className="space-y-3 text-xs font-semibold">
+          <div>
+            <label className="block text-[10px] font-extrabold text-neutral-500 uppercase tracking-wider mb-1 flex items-center gap-1">
+              <Mail size={12} className="text-primary" /> Email Address
+            </label>
+            <input
+              type="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="student@school.edu.ph"
+              className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-neutral-800 focus:ring-2 focus:ring-primary/20 outline-none"
+            />
+          </div>
 
-        <button
-          onClick={handleSubmit}
-          disabled={loading || pin.length !== 4}
-          className="w-full py-4 bg-gradient-to-r from-primary to-primary-dark text-white rounded-2xl font-black text-sm shadow-lg hover:shadow-xl transition-all cursor-pointer disabled:opacity-50 active:scale-[0.98]"
-        >
-          {loading ? 'Authenticating...' : 'Sign In to OJT Portal'}
-        </button>
+          <div>
+            <label className="block text-[10px] font-extrabold text-neutral-500 uppercase tracking-wider mb-1 flex items-center gap-1">
+              <Lock size={12} className="text-primary" /> Password
+            </label>
+            <div className="relative">
+              <input
+                type={showPassword ? 'text' : 'password'}
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Enter your password"
+                className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-neutral-800 focus:ring-2 focus:ring-primary/20 outline-none pr-10 font-bold"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-700"
+              >
+                {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+              </button>
+            </div>
+          </div>
 
-        <p className="text-xs text-neutral-500 font-semibold pt-2">
-          Don't have an OJT account?{' '}
+          <button
+            type="submit"
+            disabled={loading || !email.trim() || !password.trim()}
+            className="w-full py-3 bg-gradient-to-r from-primary via-orange-500 to-primary-dark text-white rounded-xl font-black text-xs shadow-md hover:shadow-lg transition-all cursor-pointer disabled:opacity-50 active:scale-[0.98] mt-1"
+          >
+            {loading ? 'Authenticating...' : 'Sign In to OJT Portal'}
+          </button>
+        </form>
+
+        <p className="text-center text-[11px] text-neutral-500 font-semibold pt-1">
+          Don't have an account?{' '}
           <Link to="/ojt/register" className="text-primary font-extrabold hover:underline">
             Register Account
           </Link>

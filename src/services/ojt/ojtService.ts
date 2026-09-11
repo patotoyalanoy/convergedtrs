@@ -149,7 +149,7 @@ export class OjtService {
           required_hours_per_day: newStudent.requiredHoursPerDay,
           completed_hours: 0,
           remaining_hours: newStudent.requiredHours,
-          pin_hash: newStudent.pinHash,
+          password_hash: newStudent.passwordHash,
           status: newStudent.status,
           created_at: newStudent.createdAt,
         });
@@ -183,7 +183,7 @@ export class OjtService {
             requiredHoursPerDay: s.required_hours_per_day || 8,
             completedHours: s.completed_hours || 0,
             remainingHours: Math.max(0, (s.required_hours || 480) - (s.completed_hours || 0)),
-            pinHash: s.pin_hash || '1234',
+            passwordHash: s.password_hash || s.pin_hash || '123456',
             status: s.status || 'active',
             createdAt: s.created_at || new Date().toISOString(),
           }));
@@ -236,7 +236,7 @@ export class OjtService {
             school: updated.school,
             required_hours: updated.requiredHours,
             required_hours_per_day: updated.requiredHoursPerDay,
-            pin_hash: updated.pinHash,
+            password_hash: updated.passwordHash,
             status: updated.status,
           })
           .eq('id', id);

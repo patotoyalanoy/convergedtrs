@@ -31,7 +31,7 @@ export class ConvergeDTRSDatabase extends Dexie {
       employeesCache: 'id, teamId',
       teamsCache: 'id',
       sitesCache: 'id',
-      ojtStudentsCache: 'id, email, pinHash, school',
+      ojtStudentsCache: 'id, email, passwordHash, school',
       ojtAttendanceQueue: 'id, studentId, date, timeIn, type, status, syncStatus',
     });
   }

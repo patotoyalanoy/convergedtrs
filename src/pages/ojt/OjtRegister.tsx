@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { GraduationCap, Mail, Phone, MapPin, Lock, User, Clock, CheckCircle2, ArrowLeft } from 'lucide-react';
+import { GraduationCap, Mail, Phone, MapPin, Lock, Eye, EyeOff, Clock, ArrowLeft } from 'lucide-react';
 import { OjtService } from '@/services/ojt/ojtService';
 import { useAuthStore } from '@/stores/useAuthStore';
 
@@ -16,8 +16,10 @@ export default function OjtRegister() {
   const [school, setSchool] = useState('');
   const [requiredHours, setRequiredHours] = useState<number>(480);
   const [requiredHoursPerDay, setRequiredHoursPerDay] = useState<number>(8);
-  const [pin, setPin] = useState('');
-  const [confirmPin, setConfirmPin] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -30,13 +32,13 @@ export default function OjtRegister() {
       return;
     }
 
-    if (pin.length !== 4) {
-      setError('Security PIN code must be exactly 4 digits');
+    if (password.length < 4) {
+      setError('Password must be at least 4 characters');
       return;
     }
 
-    if (pin !== confirmPin) {
-      setError('PIN code and Confirm PIN do not match');
+    if (password !== confirmPassword) {
+      setError('Password and Confirm Password do not match');
       return;
     }
 
@@ -44,12 +46,14 @@ export default function OjtRegister() {
     setError(null);
 
     try {
-      // Check if PIN is already taken by another student
+      // Check if email is already registered
       const existingStudents = await OjtService.getAllStudents();
-      const pinTaken = existingStudents.some((s) => s.pinHash === pin.trim());
+      const emailTaken = existingStudents.some(
+        (s) => s.email.toLowerCase() === email.trim().toLowerCase()
+      );
 
-      if (pinTaken) {
-        setError('This 4-digit PIN is already taken by another student. Please choose a unique PIN.');
+      if (emailTaken) {
+        setError('This email address is already registered. Please use a different email or sign in.');
         setLoading(false);
         return;
       }
@@ -64,7 +68,7 @@ export default function OjtRegister() {
         school: school.trim(),
         requiredHours: Number(requiredHours) || 480,
         requiredHoursPerDay: Number(requiredHoursPerDay) || 8,
-        pinHash: pin.trim(),
+        passwordHash: password.trim(),
       });
 
       // Auto login student
@@ -111,7 +115,7 @@ export default function OjtRegister() {
             Register OJT Account
           </h1>
           <p className="text-xs text-neutral-500 font-semibold mt-1">
-            Create your student portal for tracking daily attendance & OJT hours
+            Create your student portal for tracking daily attendance &amp; OJT hours
           </p>
         </div>
 
@@ -166,7 +170,7 @@ export default function OjtRegister() {
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="block text-[11px] font-bold text-neutral-600 uppercase tracking-wider mb-1 flex items-center gap-1">
-                <Phone size={12} /> Contact Number
+                <Phone size={12} /> Contact No.
               </label>
               <input
                 type="text"
@@ -209,7 +213,7 @@ export default function OjtRegister() {
           <div className="grid grid-cols-2 gap-3 bg-slate-50 p-3 rounded-2xl border border-slate-200/80">
             <div>
               <label className="block text-[10px] font-bold text-neutral-600 uppercase tracking-wider mb-1 flex items-center gap-1">
-                <Clock size={12} className="text-primary" /> Total Required OJT Hours *
+                <Clock size={12} className="text-primary" /> Total OJT Hours *
               </label>
               <input
                 type="number"
@@ -237,35 +241,51 @@ export default function OjtRegister() {
             </div>
           </div>
 
-          {/* PIN and Confirm PIN */}
+          {/* Password & Confirm Password */}
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="block text-[11px] font-bold text-neutral-600 uppercase tracking-wider mb-1 flex items-center gap-1">
-                <Lock size={12} className="text-primary" /> 4-Digit PIN *
+                <Lock size={12} className="text-primary" /> Password *
               </label>
-              <input
-                type="password"
-                maxLength={4}
-                required
-                value={pin}
-                onChange={(e) => setPin(e.target.value.replace(/\D/g, ''))}
-                placeholder="4 digits"
-                className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-neutral-800 tracking-widest font-black focus:ring-2 focus:ring-primary/20 outline-none text-center"
-              />
+              <div className="relative">
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Enter password"
+                  className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-neutral-800 focus:ring-2 focus:ring-primary/20 outline-none pr-8 font-bold"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-700"
+                >
+                  {showPassword ? <EyeOff size={14} /> : <Eye size={14} />}
+                </button>
+              </div>
             </div>
             <div>
               <label className="block text-[11px] font-bold text-neutral-600 uppercase tracking-wider mb-1">
-                Confirm PIN *
+                Confirm Password *
               </label>
-              <input
-                type="password"
-                maxLength={4}
-                required
-                value={confirmPin}
-                onChange={(e) => setConfirmPin(e.target.value.replace(/\D/g, ''))}
-                placeholder="Confirm"
-                className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-neutral-800 tracking-widest font-black focus:ring-2 focus:ring-primary/20 outline-none text-center"
-              />
+              <div className="relative">
+                <input
+                  type={showConfirmPassword ? 'text' : 'password'}
+                  required
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  placeholder="Re-enter"
+                  className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-neutral-800 focus:ring-2 focus:ring-primary/20 outline-none pr-8 font-bold"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-700"
+                >
+                  {showConfirmPassword ? <EyeOff size={14} /> : <Eye size={14} />}
+                </button>
+              </div>
             </div>
           </div>
 
@@ -287,7 +307,7 @@ export default function OjtRegister() {
         <p className="text-center text-xs text-neutral-500 font-semibold pt-2">
           Already registered?{' '}
           <Link to="/ojt/login" className="text-primary font-extrabold hover:underline">
-            Sign In with PIN
+            Sign In
           </Link>
         </p>
       </div>

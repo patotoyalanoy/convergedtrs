@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { User, Lock, Mail, Phone, MapPin, GraduationCap, X, CheckCircle2, ShieldCheck } from 'lucide-react';
+import { User, Lock, Mail, Phone, MapPin, GraduationCap, X, Eye, EyeOff } from 'lucide-react';
 import { OjtStudent } from '@/types/ojt';
 import { OjtService } from '@/services/ojt/ojtService';
 
@@ -15,7 +15,8 @@ export default function OjtProfileModal({ student, onClose, onProfileUpdated }: 
   const [phone, setPhone] = useState(student.phone);
   const [address, setAddress] = useState(student.address);
   const [school, setSchool] = useState(student.school);
-  const [newPin, setNewPin] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
@@ -29,8 +30,8 @@ export default function OjtProfileModal({ student, onClose, onProfileUpdated }: 
       return;
     }
 
-    if (newPin && newPin.length !== 4) {
-      setMessage('New PIN must be exactly 4 digits');
+    if (newPassword && newPassword.length < 4) {
+      setMessage('New password must be at least 4 characters');
       setIsSuccess(false);
       return;
     }
@@ -47,8 +48,8 @@ export default function OjtProfileModal({ student, onClose, onProfileUpdated }: 
         school: school.trim(),
       };
 
-      if (newPin.trim()) {
-        updates.pinHash = newPin.trim();
+      if (newPassword.trim()) {
+        updates.passwordHash = newPassword.trim();
       }
 
       await OjtService.updateStudent(student.id, updates);
@@ -162,19 +163,27 @@ export default function OjtProfileModal({ student, onClose, onProfileUpdated }: 
             />
           </div>
 
-          {/* Security PIN Change */}
+          {/* Password Change */}
           <div className="pt-2 border-t border-slate-100">
             <label className="block text-[11px] font-bold text-neutral-500 uppercase tracking-wider mb-1 flex items-center gap-1">
-              <Lock size={13} className="text-primary" /> Update 4-Digit Security PIN (Optional)
+              <Lock size={13} className="text-primary" /> Update Password (Optional)
             </label>
-            <input
-              type="password"
-              maxLength={4}
-              value={newPin}
-              onChange={(e) => setNewPin(e.target.value.replace(/\D/g, ''))}
-              placeholder="Leave blank to keep current PIN"
-              className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-neutral-800 tracking-widest font-black focus:ring-2 focus:ring-primary/20 outline-none"
-            />
+            <div className="relative">
+              <input
+                type={showPassword ? 'text' : 'password'}
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                placeholder="Leave blank to keep current password"
+                className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-neutral-800 font-bold focus:ring-2 focus:ring-primary/20 outline-none pr-10"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-700"
+              >
+                {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+              </button>
+            </div>
           </div>
 
           {message && (

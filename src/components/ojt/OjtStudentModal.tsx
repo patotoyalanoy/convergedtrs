@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { UserPlus, UserCheck, X, Mail, Phone, MapPin, GraduationCap, Lock, Clock } from 'lucide-react';
+import { UserPlus, UserCheck, X, Mail, Phone, MapPin, GraduationCap, Lock, Clock, Eye, EyeOff } from 'lucide-react';
 import { OjtStudent } from '@/types/ojt';
 import { OjtService } from '@/services/ojt/ojtService';
 
@@ -20,7 +20,8 @@ export default function OjtStudentModal({ studentToEdit, onClose, onSaved }: Pro
   const [school, setSchool] = useState(studentToEdit?.school || '');
   const [requiredHours, setRequiredHours] = useState<number>(studentToEdit?.requiredHours || 480);
   const [requiredHoursPerDay, setRequiredHoursPerDay] = useState<number>(studentToEdit?.requiredHoursPerDay || 8);
-  const [pinHash, setPinHash] = useState(studentToEdit?.pinHash || '1234');
+  const [passwordHash, setPasswordHash] = useState(studentToEdit?.passwordHash || '123456');
+  const [showPassword, setShowPassword] = useState(false);
   const [status, setStatus] = useState<'active' | 'completed' | 'inactive'>(studentToEdit?.status || 'active');
 
   const [loading, setLoading] = useState(false);
@@ -33,8 +34,8 @@ export default function OjtStudentModal({ studentToEdit, onClose, onSaved }: Pro
       return;
     }
 
-    if (pinHash.length !== 4) {
-      setError('PIN code must be exactly 4 digits');
+    if (passwordHash.length < 4) {
+      setError('Password must be at least 4 characters');
       return;
     }
 
@@ -52,7 +53,7 @@ export default function OjtStudentModal({ studentToEdit, onClose, onSaved }: Pro
           school: school.trim(),
           requiredHours: Number(requiredHours) || 480,
           requiredHoursPerDay: Number(requiredHoursPerDay) || 8,
-          pinHash: pinHash.trim(),
+          passwordHash: passwordHash.trim(),
           status,
         });
       } else {
@@ -66,7 +67,7 @@ export default function OjtStudentModal({ studentToEdit, onClose, onSaved }: Pro
           school: school.trim(),
           requiredHours: Number(requiredHours) || 480,
           requiredHoursPerDay: Number(requiredHoursPerDay) || 8,
-          pinHash: pinHash.trim(),
+          passwordHash: passwordHash.trim(),
         });
       }
 
@@ -215,21 +216,29 @@ export default function OjtStudentModal({ studentToEdit, onClose, onSaved }: Pro
             </div>
           </div>
 
-          {/* PIN & Status */}
+          {/* Password & Status */}
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="block text-[11px] font-bold text-neutral-500 uppercase tracking-wider mb-1 flex items-center gap-1">
-                <Lock size={12} className="text-primary" /> 4-Digit Security PIN *
+                <Lock size={12} className="text-primary" /> Account Password *
               </label>
-              <input
-                type="password"
-                maxLength={4}
-                required
-                value={pinHash}
-                onChange={(e) => setPinHash(e.target.value.replace(/\D/g, ''))}
-                placeholder="1234"
-                className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-neutral-800 font-black tracking-widest focus:ring-2 focus:ring-primary/20 outline-none"
-              />
+              <div className="relative">
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  required
+                  value={passwordHash}
+                  onChange={(e) => setPasswordHash(e.target.value)}
+                  placeholder="Set password"
+                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-neutral-800 font-bold focus:ring-2 focus:ring-primary/20 outline-none pr-10"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-700"
+                >
+                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
+              </div>
             </div>
             <div>
               <label className="block text-[11px] font-bold text-neutral-500 uppercase tracking-wider mb-1">
