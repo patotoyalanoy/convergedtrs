@@ -98,37 +98,30 @@ export default function OjtDashboard() {
       <PwaInstallBanner appName="OJT Converge" />
 
       {/* ── Header Banner ── */}
-      <div className="bg-gradient-to-r from-primary via-orange-500 to-amber-600 rounded-b-[36px] p-6 text-white shadow-lg relative overflow-hidden z-10">
-        <div className="flex justify-between items-center mb-4 relative z-10">
-          <div className="flex items-center gap-3">
+      <div className="bg-gradient-to-r from-slate-900 via-[#0F172A] to-[#1E3E62] rounded-b-[36px] p-5 sm:p-6 text-white shadow-xl border-b border-slate-700/80 relative overflow-hidden z-10 space-y-4">
+        {/* Top Row: Logo & Actions */}
+        <div className="flex items-center justify-between gap-3 relative z-10">
+          <div className="bg-white/95 px-3 py-1.5 rounded-2xl shadow-sm border border-white/40 flex items-center shrink-0">
             <img
               src="/CSiLogo.png"
               alt="Converge IT Solutions Inc."
               decoding="sync"
               fetchPriority="high"
-              className="h-10 w-auto object-contain shrink-0 drop-shadow-sm"
+              className="h-7 sm:h-8 w-auto object-contain"
             />
-            <div>
-              <h2 className="font-black text-lg leading-tight">
-                Welcome, {student?.firstName || user?.name?.split(' ')[0] || 'OJT Student'}!
-              </h2>
-              <p className="text-xs text-orange-100 font-medium">
-                {student?.school || 'OJT Training Program'}
-              </p>
-            </div>
           </div>
 
           <div className="flex items-center gap-2">
             <button
               onClick={() => setShowProfileModal(true)}
-              className="p-2.5 rounded-xl bg-white/20 hover:bg-white/30 text-white backdrop-blur-md transition-colors cursor-pointer"
+              className="p-2.5 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-200 border border-slate-700/80 transition-all active:scale-95 cursor-pointer shadow-sm"
               title="Edit Profile"
             >
               <User size={18} />
             </button>
             <button
               onClick={() => setShowLogoutConfirm(true)}
-              className="p-2.5 rounded-xl bg-white/20 hover:bg-white/30 text-white backdrop-blur-md transition-colors cursor-pointer"
+              className="p-2.5 rounded-xl bg-red-500/20 hover:bg-red-500/30 text-red-300 border border-red-500/30 transition-all active:scale-95 cursor-pointer shadow-sm"
               title="Sign Out"
             >
               <LogOut size={18} />
@@ -136,10 +129,25 @@ export default function OjtDashboard() {
           </div>
         </div>
 
-        {/* Status Pill */}
-        <div className="inline-flex items-center gap-2 bg-black/20 text-white px-3.5 py-1.5 rounded-full text-xs font-bold backdrop-blur-md border border-white/20">
-          <span className={`w-2 h-2 rounded-full ${dailyStats?.isCurrentlyTimedIn ? 'bg-emerald-400 animate-pulse' : 'bg-orange-300'}`} />
-          {dailyStats?.isCurrentlyTimedIn ? 'Shift Active (Timed In)' : 'Not Timed In Today'}
+        {/* Second Row: Greeting Info & Status Pill */}
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 relative z-10 pt-1">
+          <div>
+            <span className="text-[10px] font-black uppercase tracking-widest text-cyan-400 bg-cyan-950/60 px-2.5 py-0.5 rounded-full border border-cyan-500/30 inline-block mb-1">
+              OJT Student Portal
+            </span>
+            <h2 className="font-black text-xl sm:text-2xl text-white leading-tight">
+              Welcome, {student?.firstName || user?.name?.split(' ')[0] || 'OJT Student'}!
+            </h2>
+            <p className="text-xs text-slate-300 font-medium mt-0.5">
+              {student?.school || 'OJT Training Program'}
+            </p>
+          </div>
+
+          {/* Status Pill */}
+          <div className="inline-flex items-center gap-2 bg-slate-900/90 text-white px-3.5 py-2 rounded-full text-xs font-bold border border-slate-700/80 shrink-0 self-start sm:self-auto shadow-md">
+            <span className={`w-2.5 h-2.5 rounded-full ${dailyStats?.isCurrentlyTimedIn ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'}`} />
+            {dailyStats?.isCurrentlyTimedIn ? 'Shift Active (Timed In)' : 'Not Timed In Today'}
+          </div>
         </div>
       </div>
 
