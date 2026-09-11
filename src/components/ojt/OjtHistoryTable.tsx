@@ -83,13 +83,15 @@ export default function OjtHistoryTable({ logs, loading }: Props) {
               {/* Hours Breakdown Row */}
               <div className="flex items-center justify-between text-[11px] font-bold text-neutral-600 pt-1">
                 <div className="flex items-center gap-3">
-                  <span>Regular: <b className="text-neutral-900">{log.regularHours || 0} hrs</b></span>
+                  <span>Regular: <b className="text-neutral-900">{log.timeOut ? `${log.regularHours || 0} hrs` : 'In Progress'}</b></span>
                   {log.overtimeHours > 0 && (
                     <span>OT: <b className="text-blue-600">+{log.overtimeHours} hrs</b></span>
                   )}
                 </div>
                 <span className="text-xs font-black text-primary bg-primary/10 px-2.5 py-0.5 rounded-lg border border-primary/20">
-                  Total: {log.totalHoursWorked || 0} hrs
+                  Total: {log.timeOut 
+                    ? `${log.totalHoursWorked || 0} hrs` 
+                    : `In Progress (${(Math.max(0, (new Date().getTime() - new Date(log.timeIn).getTime()) / (1000 * 3600))).toFixed(1)} hrs)`}
                 </span>
               </div>
 

@@ -392,7 +392,11 @@ export default function AdminOjtManagement() {
                       </span>
                     </div>
                     <div className="text-right">
-                      <span className="font-black text-primary block">{l.totalHoursWorked || 0} hrs</span>
+                      <span className="font-black text-primary block">
+                        {l.timeOut 
+                          ? `${l.totalHoursWorked || 0} hrs` 
+                          : `In Progress (${(Math.max(0, (new Date().getTime() - new Date(l.timeIn).getTime()) / (1000 * 3600))).toFixed(1)} hrs)`}
+                      </span>
                       <span className="text-[10px] font-bold text-neutral-400 uppercase">{l.status}</span>
                     </div>
                   </div>
