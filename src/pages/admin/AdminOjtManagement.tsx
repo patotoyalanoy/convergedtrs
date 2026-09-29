@@ -6,6 +6,7 @@ import {
 import { OjtStudent, OjtAttendanceRecord } from '@/types/ojt';
 import { OjtService } from '@/services/ojt/ojtService';
 import OjtStudentModal from '@/components/ojt/OjtStudentModal';
+import OjtLogEditModal from '@/components/ojt/OjtLogEditModal';
 
 export default function AdminOjtManagement() {
   const [students, setStudents] = useState<OjtStudent[]>([]);
@@ -21,6 +22,7 @@ export default function AdminOjtManagement() {
   const [showModal, setShowModal] = useState(false);
   const [editingStudent, setEditingStudent] = useState<OjtStudent | null>(null);
   const [selectedStudentLogs, setSelectedStudentLogs] = useState<{ student: OjtStudent; logs: OjtAttendanceRecord[] } | null>(null);
+  const [editingLog, setEditingLog] = useState<OjtAttendanceRecord | null>(null);
   const [deleteConfirmStudent, setDeleteConfirmStudent] = useState<OjtStudent | null>(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
 
@@ -197,7 +199,7 @@ export default function AdminOjtManagement() {
             onChange={(e) => setSelectedSchool(e.target.value)}
             className="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-neutral-700 outline-none cursor-pointer"
           >
-            <option value="all">All Schools</option>
+            <option value="all" className="border-slate-200">All Schools</option>
             {schoolsList.map((sch) => (
               <option key={sch} value={sch}>
                 {sch}
@@ -383,7 +385,7 @@ export default function AdminOjtManagement() {
                 </p>
               ) : (
                 selectedStudentLogs.logs.map((l) => (
-                  <div key={l.id} className="bg-slate-50 p-3 rounded-2xl border border-slate-200/80 text-xs flex justify-between items-center">
+                  <div key={l.id} className="bg-slate-50 p-3 rounded-2xl border border-slate-200/80 text-xs flex justify-between items-center group">
                     <div>
                       <span className="font-extrabold text-neutral-800 block">{l.date}</span>
                       <span className="text-[11px] text-neutral-500 font-medium">
@@ -391,13 +393,22 @@ export default function AdminOjtManagement() {
                         Out: {l.timeOut ? new Date(l.timeOut).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Active'}
                       </span>
                     </div>
-                    <div className="text-right">
-                      <span className="font-black text-primary block">
-                        {l.timeOut 
-                          ? `${l.totalHoursWorked || 0} hrs` 
-                          : `In Progress (${(Math.max(0, (new Date().getTime() - new Date(l.timeIn).getTime()) / (1000 * 3600))).toFixed(1)} hrs)`}
-                      </span>
-                      <span className="text-[10px] font-bold text-neutral-400 uppercase">{l.status}</span>
+                    <div className="flex items-center gap-3">
+                      <div className="text-right">
+                        <span className="font-black text-primary block">
+                          {l.timeOut 
+                            ? `${l.totalHoursWorked || 0} hrs` 
+                            : `In Progress (${(Math.max(0, (new Date().getTime() - new Date(l.timeIn).getTime()) / (1000 * 3600))).toFixed(1)} hrs)`}
+                        </span>
+                        <span className="text-[10px] font-bold text-neutral-400 uppercase">{l.status}</span>
+                      </div>
+                      <button
+                        onClick={() => setEditingLog(l)}
+                        className="p-1.5 bg-primary/10 hover:bg-primary/20 text-primary rounded-lg transition-colors cursor-pointer sm:opacity-0 sm:group-hover:opacity-100"
+                        title="Edit Log"
+                      >
+                        <Edit3 size={14} />
+                      </button>
                     </div>
                   </div>
                 ))
@@ -405,6 +416,23 @@ export default function AdminOjtManagement() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Edit Log Modal */}
+      {editingLog && (
+        <OjtLogEditModal
+          log={editingLog}
+          onClose={() => setEditingLog(null)}
+          onSaved={async () => {
+            setEditingLog(null);
+            await loadData();
+            // Also refresh the selected student logs so the modal view updates instantly
+            if (selectedStudentLogs) {
+              const updatedLogs = await OjtService.getStudentAttendanceLogs(selectedStudentLogs.student.id);
+              setSelectedStudentLogs({ student: selectedStudentLogs.student, logs: updatedLogs });
+            }
+          }}
+        />
       )}
       {/* ── Custom Delete Confirmation Modal ── */}
       {deleteConfirmStudent && (

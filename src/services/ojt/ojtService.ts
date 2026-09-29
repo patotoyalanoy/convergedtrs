@@ -395,6 +395,81 @@ export class OjtService {
     return updatedRecord;
   }
 
+  static async updateAttendanceLog(logId: string, updates: Partial<OjtAttendanceRecord>): Promise<boolean> {
+    const log = await db.ojtAttendanceQueue.get(logId);
+    if (!log) return false;
+
+    // Recalculate hours if timeIn or timeOut was updated, unless totalHoursWorked was explicitly provided
+    let calcHours = log.totalHoursWorked;
+    let newReg = log.regularHours;
+    let newOt = log.overtimeHours;
+    let newStatus = log.status;
+    let newIsLate = log.isLate;
+    let newIsOvertime = log.isOvertime;
+    let newIsAutoTimedOut = log.isAutoTimedOut;
+
+    const timeIn = updates.timeIn || log.timeIn;
+    const timeOut = updates.timeOut || log.timeOut;
+    const isHalfDay = updates.isHalfDay !== undefined ? updates.isHalfDay : log.isHalfDay;
+
+    if (timeIn && timeOut && (updates.timeIn || updates.timeOut || updates.isHalfDay !== undefined) && updates.totalHoursWorked === undefined) {
+      const calc = this.calculateHours(timeIn, timeOut, isHalfDay, true);
+      calcHours = calc.totalHoursWorked;
+      newReg = calc.regularHours;
+      newOt = calc.overtimeHours;
+      newStatus = calc.status;
+      newIsLate = calc.isLate;
+      newIsOvertime = calc.isOvertime;
+      newIsAutoTimedOut = calc.isAutoTimedOut;
+    }
+
+    const updatedRecord: OjtAttendanceRecord = {
+      ...log,
+      ...updates,
+      regularHours: updates.regularHours ?? newReg,
+      overtimeHours: updates.overtimeHours ?? newOt,
+      totalHoursWorked: updates.totalHoursWorked ?? calcHours,
+      status: updates.status ?? newStatus,
+      isLate: updates.isLate ?? newIsLate,
+      isOvertime: updates.isOvertime ?? newIsOvertime,
+      isAutoTimedOut: updates.isAutoTimedOut ?? newIsAutoTimedOut,
+    };
+
+    // 1. Update local Dexie
+    await db.ojtAttendanceQueue.put(updatedRecord);
+
+    // 2. Recalculate student totals
+    await this.recalculateStudentHours(updatedRecord.studentId);
+
+    // 3. Update Supabase if online
+    if (navigator.onLine) {
+      try {
+        await supabase
+          .from('ojt_attendance')
+          .update({
+            date: updatedRecord.date,
+            time_in: updatedRecord.timeIn,
+            time_out: updatedRecord.timeOut,
+            type: updatedRecord.type,
+            is_late: updatedRecord.isLate,
+            is_half_day: updatedRecord.isHalfDay,
+            is_overtime: updatedRecord.isOvertime,
+            is_auto_timed_out: updatedRecord.isAutoTimedOut,
+            regular_hours: updatedRecord.regularHours,
+            overtime_hours: updatedRecord.overtimeHours,
+            total_hours_worked: updatedRecord.totalHoursWorked,
+            status: updatedRecord.status,
+            notes: updatedRecord.notes,
+          })
+          .eq('id', logId);
+      } catch (e) {
+        console.warn('Supabase update log warning:', e);
+      }
+    }
+
+    return true;
+  }
+
   static async getStudentAttendanceLogs(studentId: string): Promise<OjtAttendanceRecord[]> {
     const isOnline = navigator.onLine;
 
