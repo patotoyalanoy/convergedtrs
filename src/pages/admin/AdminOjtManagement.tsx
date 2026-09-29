@@ -83,20 +83,24 @@ export default function AdminOjtManagement() {
   const handleExportCSV = () => {
     if (filteredStudents.length === 0) return;
 
-    let csvContent = 'data:text/csv;charset=utf-8,';
-    csvContent += 'First Name,Last Name,Email,Phone,Address,School,Required Hours,Completed Hours,Remaining Hours,Status\n';
+    let csvContent = 'First Name,Last Name,Email,Phone,Address,School,Required Hours,Completed Hours,Remaining Hours,Status\n';
 
     filteredStudents.forEach((s) => {
-      csvContent += `"${s.firstName}","${s.lastName}","${s.email}","${s.phone}","${s.address}","${s.school}",${s.requiredHours},${s.completedHours},${s.remainingHours},"${s.status}"\n`;
+      // Escape quotes in fields by replacing " with "" and wrap in quotes
+      const escapeCsv = (str: string | number) => `"${String(str).replace(/"/g, '""')}"`;
+      
+      csvContent += `${escapeCsv(s.firstName)},${escapeCsv(s.lastName)},${escapeCsv(s.email)},${escapeCsv(s.phone || '')},${escapeCsv(s.address || '')},${escapeCsv(s.school)},${s.requiredHours},${s.completedHours},${s.remainingHours},${escapeCsv(s.status)}\n`;
     });
 
-    const encodedUri = encodeURI(csvContent);
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
-    link.setAttribute('href', encodedUri);
+    link.href = url;
     link.setAttribute('download', `OJT_Students_Report_${new Date().toISOString().split('T')[0]}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    URL.revokeObjectURL(url);
   };
 
   // Filter Unique Schools for filter dropdown

@@ -9,7 +9,11 @@
   }
 
   body {
-    font-family: 'Century Gothic', 'CenturyGothic', 'AppleGothic', sans-serif;
+    font-family: 'Century Gothic', 'CenturyGothic', 'AppleGothic', sans-serif !important;
     @apply bg-[#F0F4F9] text-navy-900 antialiased;
+  }
+  
+  * {
+    font-family: 'Century Gothic', 'CenturyGothic', 'AppleGothic', sans-serif !important;
   }
 }
