@@ -1,3 +1,6 @@
+/* Nunito – closest web-safe match to Century Gothic (geometric, rounded) */
+@import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,600;1,700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -9,11 +12,11 @@
   }
 
   body {
-    font-family: 'Century Gothic', 'CenturyGothic', 'AppleGothic', sans-serif !important;
+    font-family: 'Century Gothic', 'CenturyGothic', 'AppleGothic', 'Nunito', sans-serif !important;
     @apply bg-[#F0F4F9] text-navy-900 antialiased;
   }
   
   * {
-    font-family: 'Century Gothic', 'CenturyGothic', 'AppleGothic', sans-serif !important;
+    font-family: 'Century Gothic', 'CenturyGothic', 'AppleGothic', 'Nunito', sans-serif !important;
   }
 }
