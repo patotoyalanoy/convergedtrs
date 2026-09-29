@@ -81,12 +81,12 @@ export default function AdminOjtManagement() {
   };
 
   const handleExportCSV = () => {
-    if (students.length === 0) return;
+    if (filteredStudents.length === 0) return;
 
     let csvContent = 'data:text/csv;charset=utf-8,';
     csvContent += 'First Name,Last Name,Email,Phone,Address,School,Required Hours,Completed Hours,Remaining Hours,Status\n';
 
-    students.forEach((s) => {
+    filteredStudents.forEach((s) => {
       csvContent += `"${s.firstName}","${s.lastName}","${s.email}","${s.phone}","${s.address}","${s.school}",${s.requiredHours},${s.completedHours},${s.remainingHours},"${s.status}"\n`;
     });
 

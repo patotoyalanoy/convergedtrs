@@ -13,7 +13,7 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['CSiLogo.png', 'app-icon.png', 'favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg'],
+      includeAssets: ['CSiLogo.png', 'app-icon.png', 'app-icon.jpg', 'favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg'],
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,webmanifest,jpg,jpeg,gif}'],
         maximumFileSizeToCacheInBytes: 6 * 1024 * 1024,
@@ -41,6 +41,12 @@ export default defineConfig({
             sizes: '512x512',
             type: 'image/png',
             purpose: 'any maskable'
+          },
+          {
+            src: '/app-icon.jpg',
+            sizes: '180x180',
+            type: 'image/jpeg',
+            purpose: 'apple touch icon'
           }
         ]
       }

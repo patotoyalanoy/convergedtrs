@@ -8,6 +8,12 @@
       "type": "image/png",
       "sizes": "192x192 512x512",
       "purpose": "any maskable"
+    },
+    {
+      "src": "/app-icon.jpg",
+      "sizes": "180x180",
+      "type": "image/jpeg",
+      "purpose": "apple touch icon"
     }
   ],
   "start_url": "/",
