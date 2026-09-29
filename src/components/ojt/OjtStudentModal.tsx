@@ -20,6 +20,7 @@ export default function OjtStudentModal({ studentToEdit, onClose, onSaved }: Pro
   const [school, setSchool] = useState(studentToEdit?.school || '');
   const [requiredHours, setRequiredHours] = useState<number>(studentToEdit?.requiredHours || 480);
   const [requiredHoursPerDay, setRequiredHoursPerDay] = useState<number>(studentToEdit?.requiredHoursPerDay || 8);
+  const [completedHours, setCompletedHours] = useState<number>(studentToEdit?.completedHours || 0);
   const [passwordHash, setPasswordHash] = useState(studentToEdit?.passwordHash || '123456');
   const [showPassword, setShowPassword] = useState(false);
   const [status, setStatus] = useState<'active' | 'completed' | 'inactive'>(studentToEdit?.status || 'active');
@@ -44,6 +45,13 @@ export default function OjtStudentModal({ studentToEdit, onClose, onSaved }: Pro
 
     try {
       if (isEditing && studentToEdit) {
+        // Handle manual completed hours adjustment
+        const newCompletedHours = Number(completedHours);
+        if (!isNaN(newCompletedHours) && newCompletedHours !== studentToEdit.completedHours) {
+          const diff = newCompletedHours - studentToEdit.completedHours;
+          await OjtService.addManualHoursAdjustment(studentToEdit.id, diff, 'Admin Override via Edit Student');
+        }
+
         await OjtService.updateStudent(studentToEdit.id, {
           firstName: firstName.trim(),
           lastName: lastName.trim(),
@@ -57,7 +65,7 @@ export default function OjtStudentModal({ studentToEdit, onClose, onSaved }: Pro
           status,
         });
       } else {
-        await OjtService.registerStudent({
+        const newStudent = await OjtService.registerStudent({
           firstName: firstName.trim(),
           lastName: lastName.trim(),
           name: `${firstName.trim()} ${lastName.trim()}`,
@@ -69,6 +77,11 @@ export default function OjtStudentModal({ studentToEdit, onClose, onSaved }: Pro
           requiredHoursPerDay: Number(requiredHoursPerDay) || 8,
           passwordHash: passwordHash.trim(),
         });
+
+        const newCompletedHours = Number(completedHours);
+        if (!isNaN(newCompletedHours) && newCompletedHours > 0) {
+          await OjtService.addManualHoursAdjustment(newStudent.id, newCompletedHours, 'Initial Completed Hours setup');
+        }
       }
 
       onSaved();
@@ -184,11 +197,11 @@ export default function OjtStudentModal({ studentToEdit, onClose, onSaved }: Pro
             />
           </div>
 
-          {/* Required Hours Total & Daily */}
-          <div className="grid grid-cols-2 gap-3 bg-slate-50 p-3 rounded-2xl border border-slate-200/80">
+          {/* Required & Completed Hours */}
+          <div className="grid grid-cols-3 gap-3 bg-slate-50 p-3 rounded-2xl border border-slate-200/80">
             <div>
               <label className="block text-[10px] font-bold text-neutral-600 uppercase tracking-wider mb-1 flex items-center gap-1">
-                <Clock size={12} className="text-primary" /> Total Required OJT Hours *
+                <Clock size={12} className="text-primary" /> Required Hours *
               </label>
               <input
                 type="number"
@@ -202,7 +215,7 @@ export default function OjtStudentModal({ studentToEdit, onClose, onSaved }: Pro
             </div>
             <div>
               <label className="block text-[10px] font-bold text-neutral-600 uppercase tracking-wider mb-1">
-                Hours Per Day (Default: 8)
+                Hours/Day
               </label>
               <input
                 type="number"
@@ -211,6 +224,21 @@ export default function OjtStudentModal({ studentToEdit, onClose, onSaved }: Pro
                 required
                 value={requiredHoursPerDay}
                 onChange={(e) => setRequiredHoursPerDay(Number(e.target.value))}
+                className="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-neutral-800 font-extrabold focus:ring-2 focus:ring-primary/20 outline-none"
+              />
+            </div>
+            <div>
+              <label className="block text-[10px] font-bold text-neutral-600 uppercase tracking-wider mb-1">
+                Completed Hrs
+              </label>
+              <input
+                type="number"
+                min={0}
+                max={2000}
+                step="0.01"
+                required
+                value={completedHours}
+                onChange={(e) => setCompletedHours(Number(e.target.value))}
                 className="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-neutral-800 font-extrabold focus:ring-2 focus:ring-primary/20 outline-none"
               />
             </div>

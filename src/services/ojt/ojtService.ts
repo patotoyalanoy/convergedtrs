@@ -470,6 +470,67 @@ export class OjtService {
     return true;
   }
 
+  static async addManualHoursAdjustment(studentId: string, hoursToAdd: number, notes: string = 'Manual Admin Adjustment'): Promise<OjtAttendanceRecord> {
+    const student = await this.getStudentById(studentId);
+    if (!student) throw new Error('OJT Student record not found');
+
+    const now = new Date();
+    const todayStr = now.toISOString().split('T')[0];
+    
+    // Create a dummy completed record for the adjustment
+    const adjustmentRecord: OjtAttendanceRecord = {
+      id: crypto.randomUUID(),
+      studentId: student.id,
+      studentName: student.name,
+      school: student.school,
+      date: todayStr,
+      timeIn: now.toISOString(),
+      timeOut: now.toISOString(),
+      type: 'TIME_OUT', // Use standard type to avoid enum errors
+      isLate: false,
+      isHalfDay: false,
+      isOvertime: false,
+      isAutoTimedOut: false,
+      regularHours: hoursToAdd,
+      overtimeHours: 0,
+      totalHoursWorked: hoursToAdd,
+      status: 'Completed',
+      notes: notes,
+      createdOffline: !navigator.onLine,
+      syncStatus: 'pending',
+    };
+
+    await db.ojtAttendanceQueue.add(adjustmentRecord);
+
+    if (navigator.onLine) {
+      try {
+        await supabase.from('ojt_attendance').insert({
+          id: adjustmentRecord.id,
+          student_id: adjustmentRecord.studentId,
+          student_name: adjustmentRecord.studentName,
+          school: adjustmentRecord.school,
+          date: adjustmentRecord.date,
+          time_in: adjustmentRecord.timeIn,
+          time_out: adjustmentRecord.timeOut,
+          type: adjustmentRecord.type,
+          is_late: adjustmentRecord.isLate,
+          is_half_day: adjustmentRecord.isHalfDay,
+          status: adjustmentRecord.status,
+          regular_hours: adjustmentRecord.regularHours,
+          overtime_hours: adjustmentRecord.overtimeHours,
+          total_hours_worked: adjustmentRecord.totalHoursWorked,
+          notes: adjustmentRecord.notes,
+          created_offline: adjustmentRecord.createdOffline,
+        });
+      } catch (e) {
+        console.warn('Supabase manual adjustment insert warning:', e);
+      }
+    }
+
+    await this.recalculateStudentHours(studentId);
+    return adjustmentRecord;
+  }
+
   static async getStudentAttendanceLogs(studentId: string): Promise<OjtAttendanceRecord[]> {
     const isOnline = navigator.onLine;
 
