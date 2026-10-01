@@ -108,6 +108,43 @@ export class OjtService {
 
   // ─── Student Operations (CRUD) ─────────────────────────────────────────────
 
+  /**
+   * Check if an email or full name is already taken before registering.
+   * Queries Supabase directly when online; falls back to local Dexie cache offline.
+   */
+  static async checkDuplicateStudent(
+    email: string,
+    fullName: string
+  ): Promise<{ emailTaken: boolean; nameTaken: boolean }> {
+    const normalEmail = email.trim().toLowerCase();
+    const normalName  = fullName.trim().toLowerCase();
+
+    if (navigator.onLine) {
+      try {
+        const { data, error } = await supabase
+          .from('ojt_students')
+          .select('email, name')
+          .or(`email.ilike.${normalEmail},name.ilike.${normalName}`);
+
+        if (!error && data) {
+          return {
+            emailTaken: data.some((s) => s.email?.toLowerCase() === normalEmail),
+            nameTaken:  data.some((s) => s.name?.toLowerCase()  === normalName),
+          };
+        }
+      } catch (e) {
+        console.warn('Supabase duplicate check failed, falling back to Dexie:', e);
+      }
+    }
+
+    // Offline fallback — check local Dexie cache
+    const local = await db.ojtStudentsCache.toArray();
+    return {
+      emailTaken: local.some((s) => s.email?.toLowerCase() === normalEmail),
+      nameTaken:  local.some((s) => s.name?.toLowerCase()  === normalName),
+    };
+  }
+
   static async registerStudent(studentData: Omit<OjtStudent, 'id' | 'completedHours' | 'remainingHours' | 'status' | 'createdAt'>): Promise<OjtStudent> {
     const isOnline = navigator.onLine;
     const id = crypto.randomUUID();

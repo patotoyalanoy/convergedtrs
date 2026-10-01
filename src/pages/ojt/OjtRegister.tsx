@@ -53,13 +53,22 @@ export default function OjtRegister() {
     setError(null);
 
     try {
-      const existingStudents = await OjtService.getAllStudents();
-      const emailTaken = existingStudents.some(
-        (s) => s.email.toLowerCase() === email.trim().toLowerCase()
+      const fullName = `${firstName.trim()} ${lastName.trim()}`;
+
+      // ── Check for duplicate email AND duplicate full name in Supabase ──
+      const duplicateCheck = await OjtService.checkDuplicateStudent(
+        email.trim(),
+        fullName
       );
 
-      if (emailTaken) {
-        setError('This email address is already registered.');
+      if (duplicateCheck.emailTaken) {
+        setError('This email address is already registered. Please sign in instead.');
+        setLoading(false);
+        return;
+      }
+
+      if (duplicateCheck.nameTaken) {
+        setError(`An account for "${fullName}" already exists. Please use a different name or sign in.`);
         setLoading(false);
         return;
       }
@@ -67,7 +76,7 @@ export default function OjtRegister() {
       const student = await OjtService.registerStudent({
         firstName: firstName.trim(),
         lastName: lastName.trim(),
-        name: `${firstName.trim()} ${lastName.trim()}`,
+        name: fullName,
         email: email.trim(),
         phone: phone.trim(),
         address: address.trim(),
