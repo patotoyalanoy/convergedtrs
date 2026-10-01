@@ -30,13 +30,27 @@ export default function SitesManagement() {
   const [editingSite, setEditingSite] = useState<SiteItem | null>(null);
   const [deletingSiteId, setDeletingSiteId] = useState<string | null>(null);
 
-  // Form state
+  // Form state — lat/lng start at 0 and get filled by GPS when the modal opens
   const [formData, setFormData] = useState({
     name: '',
-    latitude: 14.5547,
-    longitude: 121.0244,
+    latitude: 0,
+    longitude: 0,
     geofenceRadius: 100
   });
+
+  /** Resolve the device's current GPS position, falling back to PH center */
+  const getGpsCoords = (): Promise<{ lat: number; lng: number }> =>
+    new Promise((resolve) => {
+      if ('geolocation' in navigator) {
+        navigator.geolocation.getCurrentPosition(
+          (pos) => resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
+          ()    => resolve({ lat: 12.8797, lng: 121.7740 }),
+          { timeout: 6000 }
+        );
+      } else {
+        resolve({ lat: 12.8797, lng: 121.7740 });
+      }
+    });
 
   const [toast, setToast] = useState<string | null>(null);
   const showToast = (msg: string) => {
@@ -53,13 +67,17 @@ export default function SitesManagement() {
       ]);
 
       if (siteRes.data) {
-        const mapped: SiteItem[] = siteRes.data.map(s => ({
-          id: s.id,
-          name: s.name,
-          lat: s.latitude || 14.5547,
-          lng: s.longitude || 121.0244,
-          radius: s.geofence_radius || 100
-        }));
+        // Only include sites that have real GPS coordinates saved in the database.
+        // Sites with null / 0 lat-lng are skipped so no phantom pins appear on the map.
+        const mapped: SiteItem[] = siteRes.data
+          .filter(s => s.latitude && s.longitude)
+          .map(s => ({
+            id: s.id,
+            name: s.name,
+            lat: s.latitude,
+            lng: s.longitude,
+            radius: s.geofence_radius || 100
+          }));
         setSites(mapped);
       }
 
@@ -134,7 +152,7 @@ export default function SitesManagement() {
 
       setShowAddModal(false);
       setEditingSite(null);
-      setFormData({ name: '', latitude: 14.5547, longitude: 121.0244, geofenceRadius: 100 });
+      setFormData({ name: '', latitude: 0, longitude: 0, geofenceRadius: 100 });
       fetchSitesAndLocations();
     } catch (err: any) {
       alert('Failed to save site: ' + (err.message || 'Error saving to Supabase'));
@@ -165,12 +183,13 @@ export default function SitesManagement() {
     setShowAddModal(true);
   };
 
-  const promoteUserLocation = (locName: string) => {
+  const promoteUserLocation = async (locName: string) => {
     setEditingSite(null);
+    const { lat, lng } = await getGpsCoords();
     setFormData({
       name: locName,
-      latitude: 14.5547,
-      longitude: 121.0244,
+      latitude: lat,
+      longitude: lng,
       geofenceRadius: 100
     });
     setShowAddModal(true);
@@ -203,9 +222,10 @@ export default function SitesManagement() {
             Refresh
           </button>
           <button
-            onClick={() => {
+            onClick={async () => {
               setEditingSite(null);
-              setFormData({ name: '', latitude: 14.5547, longitude: 121.0244, geofenceRadius: 100 });
+              const { lat, lng } = await getGpsCoords();
+              setFormData({ name: '', latitude: lat, longitude: lng, geofenceRadius: 100 });
               setShowAddModal(true);
             }}
             className="flex items-center gap-2 bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-xl text-xs font-black shadow-sm transition-all active:scale-95 cursor-pointer"
