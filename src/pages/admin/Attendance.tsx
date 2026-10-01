@@ -218,7 +218,7 @@ export default function AdminAttendance() {
                     <td className="px-6 py-4">
                       {row.membersPresent && row.membersPresent.length > 0 ? (
                         <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-primary/10 text-primary border border-primary/20">
-                          👥 {row.membersPresent.length} Member{row.membersPresent.length > 1 ? 's' : ''}
+                          {row.membersPresent.length} Member{row.membersPresent.length > 1 ? 's' : ''}
                         </span>
                       ) : (
                         <span className="text-xs text-neutral-400 font-medium">Solo check-in</span>
@@ -324,7 +324,7 @@ export default function AdminAttendance() {
           {/* Members Included Section */}
           <div className="mb-6 bg-neutral-50 p-4 rounded-xl border border-neutral-200/80">
             <h5 className="text-xs font-bold text-neutral-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-              👥 Included Team Members ({selectedRecord.membersPresent?.length || 0})
+              Included Team Members ({selectedRecord.membersPresent?.length || 0})
             </h5>
             {selectedRecord.membersPresent && selectedRecord.membersPresent.length > 0 ? (
               <div className="flex flex-wrap gap-1.5">

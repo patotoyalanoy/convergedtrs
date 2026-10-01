@@ -283,7 +283,7 @@ export default function TeamsManagement() {
                       onClick={() => handleInspectTeamMembers(team)}
                       className="bg-neutral-100 hover:bg-neutral-200 text-neutral-800 text-xs font-bold px-3 py-1 rounded-lg border border-neutral-200 flex items-center gap-1 cursor-pointer"
                     >
-                      👥 {team.memberCount} Member(s)
+                      {team.memberCount} Member(s)
                     </button>
                   </td>
                   <td className="px-6 py-4 text-neutral-500 font-medium">{team.createdAt}</td>
