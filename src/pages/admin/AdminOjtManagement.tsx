@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { 
   GraduationCap, Search, Plus, Edit3, Trash2, 
-  CheckCircle2, AlertTriangle, Download, RefreshCw, Calendar, X
+  CheckCircle2, AlertTriangle, Download, RefreshCw, Calendar, X, Printer
 } from 'lucide-react';
 import { OjtStudent, OjtAttendanceRecord } from '@/types/ojt';
 import { OjtService } from '@/services/ojt/ojtService';
@@ -103,6 +103,159 @@ export default function AdminOjtManagement() {
     URL.revokeObjectURL(url);
   };
 
+  const handlePrint = () => {
+    if (filteredStudents.length === 0) return;
+
+    const now      = new Date();
+    const dateStr  = now.toLocaleDateString('en-PH', { year: 'numeric', month: 'long', day: 'numeric' });
+    const timeStr  = now.toLocaleTimeString('en-PH', { hour: '2-digit', minute: '2-digit' });
+
+    // Build filter label for the report subtitle
+    const filterParts: string[] = [];
+    if (selectedSchool !== 'all') filterParts.push(`School: ${selectedSchool}`);
+    if (selectedStatus !== 'all') filterParts.push(`Status: ${selectedStatus}`);
+    if (search.trim())            filterParts.push(`Search: "${search.trim()}"`);
+    const filterLabel = filterParts.length > 0 ? filterParts.join(' • ') : 'All Students';
+
+    const rows = filteredStudents
+      .map((s, i) => {
+        const pct = Math.min(100, Math.round((s.completedHours / s.requiredHours) * 100));
+        const statusColor =
+          s.status === 'completed' ? '#15803d' :
+          s.status === 'active'    ? '#ea580c' : '#6b7280';
+        return `
+          <tr>
+            <td style="text-align:center">${i + 1}</td>
+            <td><strong>${s.firstName || s.name.split(' ')[0]}</strong></td>
+            <td>${s.lastName || s.name.split(' ').slice(1).join(' ')}</td>
+            <td>${s.school}</td>
+            <td style="text-align:center">${s.requiredHours}</td>
+            <td style="text-align:center;font-weight:700;color:#16a34a">${s.completedHours}</td>
+            <td style="text-align:center;color:#b45309">${s.remainingHours}</td>
+            <td style="text-align:center">
+              <span style="background:${statusColor}20;color:${statusColor};padding:2px 8px;border-radius:99px;font-size:9px;font-weight:800;text-transform:uppercase;border:1px solid ${statusColor}40">
+                ${s.status}
+              </span>
+            </td>
+            <td style="text-align:center">${pct}%</td>
+          </tr>`;
+      })
+      .join('');
+
+    const totalCompleted = Math.round(filteredStudents.reduce((sum, s) => sum + s.completedHours, 0) * 100) / 100;
+
+    const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>OJT Student Report — ${dateStr}</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Century Gothic', CenturyGothic, AppleGothic, Arial, sans-serif;
+      font-size: 11px;
+      color: #1e293b;
+      padding: 24px 30px;
+    }
+    .header { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; }
+    .header img { height: 44px; object-fit: contain; }
+    .header-text h1 { font-size: 16px; font-weight: 900; color: #0f172a; }
+    .header-text p  { font-size: 10px; color: #64748b; margin-top: 2px; }
+    .meta {
+      display: flex; justify-content: space-between; align-items: center;
+      background: #f8fafc; border: 1px solid #e2e8f0;
+      border-radius: 8px; padding: 8px 14px; margin-bottom: 14px;
+    }
+    .meta-left  { font-size: 10px; color: #475569; }
+    .meta-right { font-size: 10px; color: #94a3b8; text-align: right; }
+    .meta strong { color: #0f172a; }
+    table { width: 100%; border-collapse: collapse; margin-bottom: 16px; }
+    thead tr { background: #0f172a; color: white; }
+    thead th {
+      padding: 8px 10px; font-size: 9px; font-weight: 800;
+      text-transform: uppercase; letter-spacing: .06em; text-align: left;
+    }
+    tbody tr:nth-child(even) { background: #f8fafc; }
+    tbody tr:hover { background: #fff7ed; }
+    tbody td {
+      padding: 7px 10px; font-size: 10px; color: #334155;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    tfoot td {
+      padding: 8px 10px; font-size: 10px; font-weight: 800;
+      background: #f1f5f9; border-top: 2px solid #e2e8f0;
+    }
+    .footer {
+      margin-top: 10px; text-align: center;
+      font-size: 9px; color: #94a3b8; border-top: 1px solid #e2e8f0; padding-top: 8px;
+    }
+    @media print {
+      body { padding: 10px 14px; }
+      @page { margin: 14mm 10mm; }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <img src="/CSiLogo.png" alt="Converge IT Solutions" onerror="this.style.display='none'" />
+    <div class="header-text">
+      <h1>OJT Student Progress Report</h1>
+      <p>Converge IT Solutions Inc. — Daily Time Record System</p>
+    </div>
+  </div>
+
+  <div class="meta">
+    <div class="meta-left">
+      <strong>Filter:</strong> ${filterLabel} &nbsp;|&nbsp;
+      <strong>Records:</strong> ${filteredStudents.length} student${filteredStudents.length !== 1 ? 's' : ''}
+    </div>
+    <div class="meta-right">
+      Printed: ${dateStr} at ${timeStr}
+    </div>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th style="text-align:center;width:30px">#</th>
+        <th>First Name</th>
+        <th>Last Name</th>
+        <th>School</th>
+        <th style="text-align:center">Req. Hours</th>
+        <th style="text-align:center">Completed</th>
+        <th style="text-align:center">Remaining</th>
+        <th style="text-align:center">Status</th>
+        <th style="text-align:center">Progress</th>
+      </tr>
+    </thead>
+    <tbody>${rows}</tbody>
+    <tfoot>
+      <tr>
+        <td colspan="5" style="text-align:right">Total Completed Hours:</td>
+        <td style="text-align:center;color:#15803d">${totalCompleted} hrs</td>
+        <td colspan="3"></td>
+      </tr>
+    </tfoot>
+  </table>
+
+  <div class="footer">
+    This report is system-generated and may contain information that is confidential.<br/>
+    © ${now.getFullYear()} Converge IT Solutions Inc. — OJT Monitoring Module
+  </div>
+
+  <script>window.onload = () => { window.print(); }<\/script>
+</body>
+</html>`;
+
+    const win = window.open('', '_blank', 'width=900,height=700');
+    if (!win) {
+      alert('Pop-up blocked. Please allow pop-ups for this site and try again.');
+      return;
+    }
+    win.document.write(html);
+    win.document.close();
+  };
+
   // Filter Unique Schools for filter dropdown
   const schoolsList = Array.from(new Set(students.map((s) => s.school))).filter(Boolean);
 
@@ -144,9 +297,17 @@ export default function AdminOjtManagement() {
         <div className="flex items-center gap-2.5">
           <button
             onClick={handleExportCSV}
-            className="bg-white/20 hover:bg-white/30 text-white font-extrabold px-4 py-2.5 rounded-2xl text-xs flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer border border-white/30"
+            disabled={filteredStudents.length === 0}
+            className="bg-white/20 hover:bg-white/30 text-white font-extrabold px-4 py-2.5 rounded-2xl text-xs flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer border border-white/30 disabled:opacity-40 disabled:cursor-not-allowed"
           >
             <Download size={15} /> Export CSV
+          </button>
+          <button
+            onClick={handlePrint}
+            disabled={filteredStudents.length === 0}
+            className="bg-white/20 hover:bg-white/30 text-white font-extrabold px-4 py-2.5 rounded-2xl text-xs flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer border border-white/30 disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            <Printer size={15} /> Print Records
           </button>
           <button
             onClick={() => {
