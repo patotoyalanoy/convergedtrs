@@ -619,10 +619,35 @@ export default function AdminOjtManagement() {
                           </>
                         ) : (
                           <>
-                            <div className="font-black text-blue-600 text-sm">{stPeriodHours} hrs</div>
-                            <div className="text-[10px] text-blue-500 font-semibold mt-0.5">
-                              Total: {st.completedHours} / {st.requiredHours} hrs ({pct}%)
-                            </div>
+                            {todayLog && !todayLog.timeOut ? (
+                              <>
+                                <div className="font-black text-blue-600 text-sm flex items-center justify-center gap-1">
+                                  <span>
+                                    {(
+                                      Math.round(
+                                        (stPeriodHours +
+                                          Math.max(
+                                            0,
+                                            (new Date().getTime() - new Date(todayLog.timeIn).getTime()) / (1000 * 3600)
+                                          )) * 100
+                                      ) / 100
+                                    ).toFixed(2)}{' '}
+                                    hrs
+                                  </span>
+                                  <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" title="Shift in progress" />
+                                </div>
+                                <div className="text-[10px] text-blue-500 font-semibold mt-0.5">
+                                  In Progress • Total: {st.completedHours} / {st.requiredHours} hrs
+                                </div>
+                              </>
+                            ) : (
+                              <>
+                                <div className="font-black text-blue-600 text-sm">{stPeriodHours} hrs</div>
+                                <div className="text-[10px] text-blue-500 font-semibold mt-0.5">
+                                  Total: {st.completedHours} / {st.requiredHours} hrs ({pct}%)
+                                </div>
+                              </>
+                            )}
                           </>
                         )}
                       </td>
