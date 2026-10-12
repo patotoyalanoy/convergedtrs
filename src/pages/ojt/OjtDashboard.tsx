@@ -84,8 +84,8 @@ export default function OjtDashboard() {
 
   return (
     <div
-      className="flex flex-col flex-1 bg-[#0f172a] min-h-screen pb-12 relative overflow-x-hidden"
-      style={{ fontFamily: "'Century Gothic', CenturyGothic, AppleGothic, sans-serif" }}
+      className="flex flex-col flex-1 bg-[#0f172a] min-h-screen pb-12 relative overflow-x-hidden font-monolithic"
+      style={{ fontFamily: "'JetBrains Mono', 'SF Mono', Menlo, Monaco, Consolas, monospace" }}
     >
       {/* Grid Pattern Background */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff33_1px,transparent_1px),linear-gradient(to_bottom,#ffffff33_1px,transparent_1px)] bg-[size:6rem_4rem] pointer-events-none" />
@@ -124,21 +124,29 @@ export default function OjtDashboard() {
         {/* Student Info Card */}
         <div className="p-5 border-b border-slate-700/80">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary to-amber-500 flex items-center justify-center font-black text-lg text-white shadow-lg shrink-0">
-              {initials}
+            <div className="w-12 h-12 rounded-2xl bg-[#09111e] border border-blue-500/40 p-1 flex items-center justify-center shadow-lg shadow-blue-500/10 shrink-0 overflow-hidden relative group">
+              <img
+                src="/ojt-tech-avatar.png"
+                alt="Tech Trainee Avatar"
+                className="w-full h-full object-cover rounded-xl"
+                onError={(e) => {
+                  // Fallback to tech icon if image fails
+                  e.currentTarget.style.display = 'none';
+                }}
+              />
             </div>
             <div className="overflow-hidden">
-              <p className="font-extrabold text-sm text-white truncate">{student?.name || user?.name}</p>
+              <p className="font-black text-sm text-white tracking-wide truncate">{student?.name || user?.name}</p>
               <p className="text-[11px] text-slate-400 font-medium truncate">{student?.school || 'OJT Student'}</p>
             </div>
           </div>
 
           <div className={`mt-3 flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold border ${
             dailyStats?.isCurrentlyTimedIn
-              ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
+              ? 'bg-blue-500/10 border-blue-500/30 text-blue-400'
               : 'bg-slate-800 border-slate-700 text-slate-400'
           }`}>
-            <span className={`w-2 h-2 rounded-full shrink-0 ${dailyStats?.isCurrentlyTimedIn ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'}`} />
+            <span className={`w-2 h-2 rounded-full shrink-0 ${dailyStats?.isCurrentlyTimedIn ? 'bg-blue-400 animate-pulse' : 'bg-orange-400'}`} />
             {dailyStats?.isCurrentlyTimedIn ? 'Shift Active (Timed In)' : 'Not Timed In Today'}
           </div>
         </div>
@@ -148,9 +156,9 @@ export default function OjtDashboard() {
           <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Quick Stats</p>
           <div className="grid grid-cols-3 gap-2 text-center">
             <div className="bg-slate-900/80 rounded-2xl p-2.5 border border-slate-700/60">
-              <CheckCircle2 size={14} className="text-emerald-400 mx-auto mb-1" />
+              <CheckCircle2 size={14} className="text-blue-400 mx-auto mb-1" />
               <p className="text-[10px] text-slate-500 font-bold uppercase">Done</p>
-              <p className="font-black text-emerald-400 text-sm">{dailyStats?.completedHours || 0}h</p>
+              <p className="font-black text-blue-400 text-sm">{dailyStats?.completedHours || 0}h</p>
             </div>
             <div className="bg-slate-900/80 rounded-2xl p-2.5 border border-slate-700/60">
               <Clock size={14} className="text-orange-400 mx-auto mb-1" />
@@ -158,9 +166,9 @@ export default function OjtDashboard() {
               <p className="font-black text-orange-400 text-sm">{dailyStats?.remainingHours || student?.requiredHours || 0}h</p>
             </div>
             <div className="bg-slate-900/80 rounded-2xl p-2.5 border border-slate-700/60">
-              <GraduationCap size={14} className="text-cyan-400 mx-auto mb-1" />
+              <GraduationCap size={14} className="text-white mx-auto mb-1" />
               <p className="text-[10px] text-slate-500 font-bold uppercase">Done %</p>
-              <p className="font-black text-cyan-400 text-sm">{dailyStats?.progressPercentage || 0}%</p>
+              <p className="font-black text-white text-sm">{dailyStats?.progressPercentage || 0}%</p>
             </div>
           </div>
         </div>
@@ -180,7 +188,7 @@ export default function OjtDashboard() {
         <div className="mt-auto p-4 border-t border-slate-700/80">
           <button
             onClick={() => setShowLogoutConfirm(true)}
-            className="flex items-center gap-3 w-full px-4 py-3 rounded-2xl text-sm font-bold text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-all cursor-pointer border border-red-500/20"
+            className="flex items-center gap-3 w-full px-4 py-3 rounded-2xl text-sm font-bold text-orange-400 hover:bg-orange-500/10 hover:text-orange-300 transition-all cursor-pointer border border-orange-500/20"
           >
             <LogOut size={18} />
             Sign Out
@@ -202,7 +210,7 @@ export default function OjtDashboard() {
         </div>
 
         {/* Center portal tag */}
-        <span className="hidden sm:inline-flex text-[10px] font-black uppercase tracking-widest text-cyan-400 bg-cyan-950/60 px-3 py-1 rounded-full border border-cyan-500/30">
+        <span className="hidden sm:inline-flex text-[10px] font-black uppercase tracking-widest text-blue-400 bg-blue-950/60 px-3 py-1 rounded-full border border-blue-500/30">
           OJT Student Portal
         </span>
 
@@ -210,10 +218,10 @@ export default function OjtDashboard() {
         <div className="flex items-center gap-2">
           <div className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-[10px] font-bold border ${
             dailyStats?.isCurrentlyTimedIn
-              ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
+              ? 'bg-blue-500/10 border-blue-500/30 text-blue-400'
               : 'bg-slate-800 border-slate-700 text-slate-400'
           }`}>
-            <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${dailyStats?.isCurrentlyTimedIn ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'}`} />
+            <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${dailyStats?.isCurrentlyTimedIn ? 'bg-blue-400 animate-pulse' : 'bg-orange-400'}`} />
             <span className="hidden xs:inline">{dailyStats?.isCurrentlyTimedIn ? 'Active' : 'Off Shift'}</span>
           </div>
           <button
@@ -228,12 +236,19 @@ export default function OjtDashboard() {
 
       {/* ── Welcome Banner ── */}
       <div className="relative z-10 bg-gradient-to-r from-slate-800/80 to-slate-900/80 border-b border-slate-700/60 px-4 sm:px-6 py-4 flex items-center gap-3 backdrop-blur-md">
-        <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-primary to-amber-500 flex items-center justify-center font-black text-base text-white shadow-lg shrink-0">
-          {initials}
+        <div className="w-12 h-12 rounded-2xl bg-[#09111e] border-2 border-orange-500/40 p-0.5 flex items-center justify-center shadow-lg shadow-orange-500/10 shrink-0 overflow-hidden relative">
+          <img
+            src="/ojt-tech-avatar.png"
+            alt="Tech Trainee Avatar"
+            className="w-full h-full object-cover rounded-xl"
+            onError={(e) => {
+              e.currentTarget.style.display = 'none';
+            }}
+          />
         </div>
         <div className="min-w-0">
-          <h2 className="font-black text-base sm:text-lg text-white leading-tight truncate">
-            Welcome back, {student?.firstName || user?.name?.split(' ')[0] || 'OJT Student'}!
+          <h2 className="text-base sm:text-lg text-white leading-tight truncate">
+            Welcome back, <span className="font-black text-orange-400 font-extrabold">{student?.firstName || user?.name?.split(' ')[0] || 'OJT Student'}</span>!
           </h2>
           <p className="text-[11px] text-slate-400 font-medium truncate">
             {student?.school || 'OJT Training Program'} • {new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
@@ -276,7 +291,7 @@ export default function OjtDashboard() {
       {showLogoutConfirm && (
         <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
           <div className="bg-slate-800 rounded-3xl p-6 w-full max-w-sm shadow-2xl border border-slate-700 text-center space-y-4">
-            <div className="w-14 h-14 bg-red-500/10 text-red-400 rounded-2xl flex items-center justify-center mx-auto border border-red-500/20">
+            <div className="w-14 h-14 bg-orange-500/10 text-orange-400 rounded-2xl flex items-center justify-center mx-auto border border-orange-500/20">
               <LogOut size={28} />
             </div>
             <div>
@@ -296,7 +311,7 @@ export default function OjtDashboard() {
               <button
                 type="button"
                 onClick={confirmLogout}
-                className="flex-1 py-3 rounded-xl font-bold text-xs bg-red-600 hover:bg-red-700 text-white shadow-md transition-all cursor-pointer flex items-center justify-center gap-1.5"
+                className="flex-1 py-3 rounded-xl font-bold text-xs bg-orange-600 hover:bg-orange-700 text-white shadow-md transition-all cursor-pointer flex items-center justify-center gap-1.5"
               >
                 <LogOut size={13} /> Sign Out
               </button>

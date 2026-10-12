@@ -18,7 +18,7 @@ export default function OjtProgressCard({ student, completedHours, remainingHour
             <GraduationCap size={24} />
           </div>
           <div>
-            <h3 className="font-extrabold text-base text-white leading-tight">
+            <h3 className="font-black text-base text-white leading-tight tracking-wide">
               {student.name}
             </h3>
             <p className="text-xs text-slate-400 font-semibold mt-0.5">
@@ -28,7 +28,7 @@ export default function OjtProgressCard({ student, completedHours, remainingHour
         </div>
         <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${
           progressPercentage >= 100
-            ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+            ? 'bg-blue-500/20 text-blue-300 border border-blue-500/30'
             : 'bg-primary/20 text-orange-300 border border-primary/30'
         }`}>
           {progressPercentage >= 100 ? 'Completed' : 'In Progress'}
@@ -45,7 +45,7 @@ export default function OjtProgressCard({ student, completedHours, remainingHour
         </div>
         <div className="w-full h-3.5 bg-slate-900 rounded-full overflow-hidden p-0.5 border border-slate-700 shadow-inner">
           <div
-            className="h-full bg-gradient-to-r from-primary via-orange-400 to-emerald-500 rounded-full transition-all duration-500 shadow-sm"
+            className="h-full bg-blue-500 rounded-full transition-all duration-500 shadow-sm"
             style={{ width: `${Math.min(100, Math.max(0, progressPercentage))}%` }}
           />
         </div>
@@ -55,7 +55,7 @@ export default function OjtProgressCard({ student, completedHours, remainingHour
       <div className="grid grid-cols-3 gap-2.5 pt-2 border-t border-slate-700/60 text-center">
         <div className="bg-slate-900/80 p-2.5 rounded-2xl border border-slate-700/60">
           <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Completed</span>
-          <span className="text-base font-black text-emerald-400 block mt-0.5">{completedHours} hrs</span>
+          <span className="text-base font-black text-blue-400 block mt-0.5">{completedHours} hrs</span>
         </div>
         <div className="bg-slate-900/80 p-2.5 rounded-2xl border border-slate-700/60">
           <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Remaining</span>

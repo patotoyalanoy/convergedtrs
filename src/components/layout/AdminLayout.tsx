@@ -72,12 +72,25 @@ export default function AdminLayout() {
           </div>
 
           <div className="flex items-center gap-3 pt-3 border-t border-[#1A2E48]">
-            <div className="w-9 h-9 bg-primary text-white rounded-xl flex items-center justify-center font-black text-sm shrink-0 shadow-md shadow-primary/20">
-              {user?.name?.charAt(0) || 'A'}
+            <div className="relative w-11 h-11 rounded-2xl overflow-hidden shrink-0 border-2 border-primary/60 shadow-lg shadow-primary/20 bg-[#071322] flex items-center justify-center">
+              <img 
+                src="/Converge.IT Tech Mascot Badge.png" 
+                alt="Converge.IT Tech Mascot Badge" 
+                className="w-full h-full object-contain p-0.5"
+                onError={(e) => {
+                  e.currentTarget.src = '/admin-mascot.png';
+                }}
+              />
+              <span className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 border-2 border-[#0B192C] rounded-full shadow-xs" title="Online Admin"></span>
             </div>
-            <div className="overflow-hidden">
-              <p className="font-extrabold text-xs text-white truncate">{user?.name}</p>
-              <p className="text-[10px] text-slate-400 font-medium">Converge Administrator</p>
+            <div className="overflow-hidden font-century-gothic" style={{ fontFamily: "'Century Gothic', CenturyGothic, AppleGothic, sans-serif" }}>
+              <p className="font-black text-xs text-white truncate tracking-wide font-century-gothic" style={{ fontFamily: "'Century Gothic', CenturyGothic, AppleGothic, sans-serif" }}>
+                {user?.name || 'Super Admin'}
+              </p>
+              <p className="text-[10px] text-slate-300/90 font-medium tracking-wider font-century-gothic flex items-center gap-1.5 mt-0.5" style={{ fontFamily: "'Century Gothic', CenturyGothic, AppleGothic, sans-serif" }}>
+                <span className="w-1.5 h-1.5 rounded-full bg-primary inline-block"></span>
+                Converge Administrator
+              </p>
             </div>
           </div>
         </div>

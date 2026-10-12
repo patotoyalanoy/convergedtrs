@@ -187,7 +187,7 @@ export default function OjtProfileModal({ student, onClose, onProfileUpdated }: 
           </div>
 
           {message && (
-            <p className={`text-xs font-extrabold text-center py-2 px-3 rounded-xl border ${isSuccess ? 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20' : 'text-red-400 bg-red-500/10 border-red-500/20'}`}>
+            <p className={`text-xs font-extrabold text-center py-2 px-3 rounded-xl border ${isSuccess ? 'text-blue-400 bg-blue-500/10 border-blue-500/20' : 'text-orange-400 bg-orange-500/10 border-orange-500/20'}`}>
               {message}
             </p>
           )}
