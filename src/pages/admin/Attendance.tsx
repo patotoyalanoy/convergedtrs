@@ -224,9 +224,9 @@ export default function AdminAttendance() {
                         <span className="text-xs text-neutral-400 font-medium">Solo check-in</span>
                       )}
                     </td>
-                    <td className="px-6 py-4 font-medium">
+                    <td className="px-6 py-4 font-medium whitespace-nowrap">
                       <span className={clsx(
-                        "px-2.5 py-1 rounded-md text-xs font-bold",
+                        "inline-flex items-center justify-center px-2.5 py-1 rounded-md text-xs font-bold whitespace-nowrap",
                         row.type === 'TIME_IN' ? "bg-emerald-100 text-emerald-700" : "bg-blue-100 text-blue-700"
                       )}>
                         {row.type === 'TIME_IN' ? 'Time In' : 'Time Out'}
