@@ -26,10 +26,10 @@ export default function OjtLogEditModal({ log, onClose, onSaved }: Props) {
     return `${hh}:${mm}`;
   };
 
-  const [timeInDateStr, setTimeInDateStr] = useState(log.timeIn ? log.timeIn.split('T')[0] : log.date);
+  const [timeInDateStr, setTimeInDateStr] = useState(log.timeIn ? OjtService.getLocalDateStr(new Date(log.timeIn)) : log.date);
   const [timeInTime, setTimeInTime] = useState(formatTimeForInput(log.timeIn));
   
-  const [timeOutDateStr, setTimeOutDateStr] = useState(log.timeOut ? log.timeOut.split('T')[0] : log.date);
+  const [timeOutDateStr, setTimeOutDateStr] = useState(log.timeOut ? OjtService.getLocalDateStr(new Date(log.timeOut)) : log.date);
   const [timeOutTime, setTimeOutTime] = useState(formatTimeForInput(log.timeOut));
 
   const [totalHoursWorked, setTotalHoursWorked] = useState(log.totalHoursWorked?.toString() || '0');

@@ -1,56 +1,62 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { format } from 'date-fns';
 import { LogIn, LogOut, Clock, AlertCircle, Sparkles, ChevronRight, ToggleLeft, ToggleRight, Sun, Moon } from 'lucide-react';
 import { OjtAttendanceRecord } from '@/types/ojt';
+import { OjtService } from '@/services/ojt/ojtService';
 
 interface Props {
   todayRecord: OjtAttendanceRecord | null;
   isCurrentlyTimedIn: boolean;
   onTimeIn: (isHalfDay: boolean, notes?: string) => Promise<void>;
   onTimeOut: (allowOvertime: boolean, notes?: string) => Promise<void>;
+  /** Called once the active session reaches its cap so the parent can reload (auto-closes it). */
+  onAutoTimeOut: () => Promise<void>;
   loading: boolean;
 }
 
-export default function OjtTimeControls({ todayRecord, isCurrentlyTimedIn, onTimeIn, onTimeOut, loading }: Props) {
+export default function OjtTimeControls({ todayRecord, isCurrentlyTimedIn, onTimeIn, onTimeOut, onAutoTimeOut, loading }: Props) {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [isHalfDay, setIsHalfDay] = useState(false);
   const [notes, setNotes] = useState('');
 
-  // Persist Overtime state across page refreshes for the active session
-  const [allowOvertime, setAllowOvertimeState] = useState<boolean>(() => {
-    try {
-      const saved = localStorage.getItem(`ojt_ot_${todayRecord?.id || todayRecord?.studentId || 'current'}`);
-      return saved === 'true';
-    } catch {
-      return false;
-    }
-  });
+  const openRecord = isCurrentlyTimedIn && todayRecord && !todayRecord.timeOut ? todayRecord : null;
 
-  const setAllowOvertime = (val: boolean) => {
+  // Overtime request is stored on the attendance record itself (Dexie + Supabase), so it
+  // survives refreshes, works across devices, and is respected by the auto time-out.
+  const [allowOvertime, setAllowOvertimeState] = useState<boolean>(!!openRecord?.isOvertime);
+
+  useEffect(() => {
+    setAllowOvertimeState(!!openRecord?.isOvertime);
+  }, [openRecord?.id, openRecord?.isOvertime]);
+
+  const setAllowOvertime = async (val: boolean) => {
     setAllowOvertimeState(val);
+    if (!openRecord) return;
     try {
-      const storageKey = `ojt_ot_${todayRecord?.id || todayRecord?.studentId || 'current'}`;
-      localStorage.setItem(storageKey, val ? 'true' : 'false');
+      await OjtService.setOvertimeRequest(openRecord.id, val);
     } catch (e) {
-      console.warn('Failed to save overtime state to localStorage:', e);
+      console.warn('Failed to save overtime request:', e);
     }
   };
-
-  // Sync state if record changes
-  useEffect(() => {
-    if (todayRecord) {
-      const key = `ojt_ot_${todayRecord.id || todayRecord.studentId || 'current'}`;
-      const saved = localStorage.getItem(key);
-      if (saved !== null) {
-        setAllowOvertimeState(saved === 'true');
-      }
-    }
-  }, [todayRecord?.id]);
 
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
     return () => clearInterval(timer);
   }, []);
+
+  // ── Auto Time-Out ──
+  const sessionCap = openRecord
+    ? OjtService.getSessionCap(openRecord.timeIn, openRecord.isHalfDay, allowOvertime)
+    : null;
+  const autoTriggeredFor = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (!openRecord || !sessionCap || loading) return;
+    if (currentTime.getTime() >= sessionCap.getTime() && autoTriggeredFor.current !== openRecord.id) {
+      autoTriggeredFor.current = openRecord.id;
+      onAutoTimeOut().catch((e) => console.warn('Auto time-out failed:', e));
+    }
+  }, [currentTime, openRecord?.id, sessionCap?.getTime(), loading]);
 
   const handleTimeInClick = async () => {
     await onTimeIn(isHalfDay, notes);
@@ -60,19 +66,10 @@ export default function OjtTimeControls({ todayRecord, isCurrentlyTimedIn, onTim
   const handleTimeOutClick = async () => {
     await onTimeOut(allowOvertime, notes);
     setNotes('');
-    // Clear persisted overtime after successful Time Out
-    try {
-      const key = `ojt_ot_${todayRecord?.id || todayRecord?.studentId || 'current'}`;
-      localStorage.removeItem(key);
-      localStorage.removeItem('ojt_ot_current');
-    } catch {}
   };
 
-  const isLateNow = () => {
-    const h = currentTime.getHours();
-    const m = currentTime.getMinutes();
-    return h > 9 || (h === 9 && m > 30);
-  };
+  const isLateNow = () => OjtService.isTimeInLate(currentTime);
+
 
   return (
     <div className="bg-slate-800/90 rounded-3xl p-5 shadow-xl border border-slate-700/80 space-y-5 text-white backdrop-blur-md">
@@ -182,6 +179,7 @@ export default function OjtTimeControls({ todayRecord, isCurrentlyTimedIn, onTim
             <span className="leading-tight">TIME OUT NOW</span>
             <span className="text-[10px] font-semibold text-orange-100 opacity-90">
               {allowOvertime ? 'Includes Overtime (Up to 7:00 PM)' : 'Regular Shift Time Out'}
+              {sessionCap && ` • Auto Time-Out ${format(sessionCap, 'hh:mm a')}`}
             </span>
           </div>
           <ChevronRight size={18} className="ml-auto opacity-60" />

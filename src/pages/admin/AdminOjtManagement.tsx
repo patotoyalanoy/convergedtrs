@@ -376,13 +376,15 @@ export default function AdminOjtManagement() {
   const totalCompletedHoursSum = selectedDateRange === 'all'
     ? Math.round(students.reduce((sum, s) => sum + s.completedHours, 0))
     : Math.round(rangeLogs.reduce((sum, l) => sum + (l.totalHoursWorked || 0), 0) * 100) / 100;
-  const activeTodayCount = logs.filter((l) => l.date === new Date().toISOString().split('T')[0] && !l.timeOut).length;
+  const todayLocalStr = OjtService.getLocalDateStr();
+  const activeTodayCount = logs.filter((l) => !l.timeOut).length;
   const lateCountInPeriod = selectedDateRange === 'all'
-    ? logs.filter((l) => l.date === new Date().toISOString().split('T')[0] && l.isLate).length
+    ? logs.filter((l) => l.date === todayLocalStr && l.isLate).length
     : rangeLogs.filter((l) => l.isLate).length;
+  const hasCreditedOt = (l: OjtAttendanceRecord) => !!l.timeOut && (l.overtimeHours || 0) > 0;
   const overtimeCountInPeriod = selectedDateRange === 'all'
-    ? logs.filter((l) => l.isOvertime).length
-    : rangeLogs.filter((l) => l.isOvertime).length;
+    ? logs.filter(hasCreditedOt).length
+    : rangeLogs.filter(hasCreditedOt).length;
 
   return (
     <div className="p-4 sm:p-6 space-y-6 max-w-7xl mx-auto">
@@ -588,8 +590,8 @@ export default function AdminOjtManagement() {
                   const pct = Math.min(100, Math.round((st.completedHours / st.requiredHours) * 100));
                   const stLogs = logs.filter((l) => l.studentId === st.id);
                   const stPeriodHours = Math.round((studentRangeHoursMap.get(st.id) || 0) * 100) / 100;
-                  const todayStr = new Date().toISOString().split('T')[0];
-                  const todayLog = stLogs.find((l) => l.date === todayStr);
+                  const openLog = stLogs.find((l) => !l.timeOut);
+                  const todayLog = openLog || stLogs.find((l) => l.date === todayLocalStr);
 
                   return (
                     <tr key={st.id} className="hover:bg-slate-50/80 transition-colors">
@@ -624,13 +626,7 @@ export default function AdminOjtManagement() {
                                 <div className="font-black text-blue-600 text-sm flex items-center justify-center gap-1">
                                   <span>
                                     {(
-                                      Math.round(
-                                        (stPeriodHours +
-                                          Math.max(
-                                            0,
-                                            (new Date().getTime() - new Date(todayLog.timeIn).getTime()) / (1000 * 3600)
-                                          )) * 100
-                                      ) / 100
+                                      Math.round((stPeriodHours + OjtService.getLiveHours(todayLog)) * 100) / 100
                                     ).toFixed(2)}{' '}
                                     hrs
                                   </span>
@@ -770,7 +766,7 @@ export default function AdminOjtManagement() {
                         <span className="font-black text-primary block">
                           {l.timeOut 
                             ? `${l.totalHoursWorked || 0} hrs` 
-                            : `In Progress (${(Math.max(0, (new Date().getTime() - new Date(l.timeIn).getTime()) / (1000 * 3600))).toFixed(1)} hrs)`}
+                            : `In Progress (${OjtService.getLiveHours(l).toFixed(1)} hrs)`}
                         </span>
                         <span className="text-[10px] font-bold text-neutral-400 uppercase">{l.status}</span>
                       </div>

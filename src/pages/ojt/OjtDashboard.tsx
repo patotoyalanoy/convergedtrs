@@ -272,6 +272,7 @@ export default function OjtDashboard() {
           isCurrentlyTimedIn={dailyStats?.isCurrentlyTimedIn || false}
           onTimeIn={handleTimeIn}
           onTimeOut={handleTimeOut}
+          onAutoTimeOut={loadStudentData}
           loading={actionLoading || loading}
         />
 

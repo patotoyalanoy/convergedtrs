@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import { Calendar, Clock, ChevronLeft, ChevronRight, ListFilter, ArrowUpDown } from 'lucide-react';
 import { OjtAttendanceRecord } from '@/types/ojt';
 import { format } from 'date-fns';
+import { OjtService } from '@/services/ojt/ojtService';
 
 interface Props {
   logs: OjtAttendanceRecord[];
@@ -67,7 +68,10 @@ export default function OjtHistoryTable({ logs, loading }: Props) {
         {pagedLogs.map((log) => {
           const formattedIn = log.timeIn ? format(new Date(log.timeIn), 'hh:mm a') : '—';
           const formattedOut = log.timeOut ? format(new Date(log.timeOut), 'hh:mm a') : 'Active...';
-          const dateStr = log.timeIn ? format(new Date(log.timeIn), 'MMM dd, yyyy') : log.date;
+          const dateStr = format(
+            new Date(`${log.timeIn ? OjtService.getLocalDateStr(new Date(log.timeIn)) : log.date}T00:00:00`),
+            'MMM dd, yyyy'
+          );
 
           return (
             <div
@@ -119,7 +123,7 @@ export default function OjtHistoryTable({ logs, loading }: Props) {
                 <span className="text-xs font-black text-orange-300 bg-primary/20 px-2 py-0.5 rounded-lg border border-primary/30">
                   Total: {log.timeOut 
                     ? `${log.totalHoursWorked || 0} hrs` 
-                    : `In Progress (${(Math.max(0, (new Date().getTime() - new Date(log.timeIn).getTime()) / (1000 * 3600))).toFixed(1)} hrs)`}
+                    : `In Progress (${OjtService.getLiveHours(log).toFixed(1)} hrs)`}
                 </span>
               </div>
 
