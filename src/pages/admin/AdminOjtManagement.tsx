@@ -647,10 +647,10 @@ export default function AdminOjtManagement() {
                           </>
                         )}
                       </td>
-                      <td className="p-3.5 text-center">
-                        <div className="flex flex-col items-center gap-1">
+                      <td className="p-3.5 text-center align-middle whitespace-nowrap">
+                        <div className="inline-flex flex-col items-center justify-center gap-1.5 py-0.5">
                           <span
-                            className={`px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wider ${
+                            className={`px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wider inline-block leading-none ${
                               st.status === 'completed'
                                 ? 'bg-emerald-100 text-emerald-700 border border-emerald-200'
                                 : st.status === 'active'
@@ -662,8 +662,8 @@ export default function AdminOjtManagement() {
                           </span>
                           {selectedDateRange === 'today' && todayLog && (
                             <span className={clsx(
-                              "text-[9px] font-extrabold px-1.5 py-0.5 rounded",
-                              !todayLog.timeOut ? "bg-emerald-50 text-emerald-700 border border-emerald-200" : "bg-slate-100 text-slate-600"
+                              "text-[9px] font-extrabold px-2 py-0.5 rounded-md inline-flex items-center gap-1 leading-none shadow-2xs whitespace-nowrap",
+                              !todayLog.timeOut ? "bg-emerald-50 text-emerald-700 border border-emerald-200" : "bg-slate-100 text-slate-600 border border-slate-200"
                             )}>
                               {!todayLog.timeOut ? '● Timed In' : 'Timed Out'}
                             </span>
