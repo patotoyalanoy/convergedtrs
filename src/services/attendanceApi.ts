@@ -101,6 +101,9 @@ export async function fetchAllAttendanceRecords(): Promise<FormattedAttendanceRe
     }
 
 
+    // Sort all records descending (latest to oldest)
+    fetchedRecords.sort((a, b) => new Date(b.recordedAt).getTime() - new Date(a.recordedAt).getTime());
+
     return fetchedRecords;
   } catch (error) {
     console.error('Error fetching Supabase attendance records:', error);

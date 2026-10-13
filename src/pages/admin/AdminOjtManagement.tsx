@@ -673,7 +673,14 @@ export default function AdminOjtManagement() {
                       <td className="p-3.5 pr-5 text-right">
                         <div className="flex items-center justify-end gap-1.5">
                           <button
-                            onClick={() => setSelectedStudentLogs({ student: st, logs: stLogs })}
+                            onClick={() => {
+                              const sorted = [...stLogs].sort((a, b) => {
+                                const timeA = a.timeIn ? new Date(a.timeIn).getTime() : new Date(a.date).getTime();
+                                const timeB = b.timeIn ? new Date(b.timeIn).getTime() : new Date(b.date).getTime();
+                                return timeB - timeA;
+                              });
+                              setSelectedStudentLogs({ student: st, logs: sorted });
+                            }}
                             className="p-1.5 bg-slate-100 hover:bg-slate-200 text-neutral-700 rounded-lg transition-colors cursor-pointer"
                             title="View Attendance Logs"
                           >
